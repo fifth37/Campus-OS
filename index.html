@@ -362,11 +362,11 @@
         // 1. SUPABASE CONFIGURATION
         // ==========================================
         const SUPABASE_URL = 'https://efnzjbwirhczmlvdzgrq.supabase.co';
-        const SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
+        const SUPABASE_ANON_KEY = 'sb_publishable_oaCwIADL77PbV9jPNJJA1Q_eE9EANFv';
         
         let supabaseClient = null;
         try {
-            if (window.supabase && SUPABASE_ANON_KEY !== 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE') {
+            if (window.supabase && SUPABASE_ANON_KEY !== 'sb_publishable_oaCwIADL77PbV9jPNJJA1Q_eE9EANFv') {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
         } catch (err) {
