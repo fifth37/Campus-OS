@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus OS | Unified University Workspace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons & Supabase JS -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- ================= AUTHENTICATION VIEW ================= -->
+    <div id="auth-view" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl p-8 space-y-6">
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand-600 text-white shadow-lg shadow-brand-600/30 mb-2">
+                    <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight">Welcome to Campus OS</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Unified Portal for Students, Lecturers & Administration</p>
+            </div>
+
+            <!-- Google OAuth Button -->
+            <button type="button" onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 font-medium text-sm shadow-sm transition">
+                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
+                    <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14Z"/>
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96Z"/>
+                </svg>
+                <span>Continue with Google</span>
+            </button>
+
+            <div class="relative flex items-center py-1">
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+                <span class="flex-shrink mx-3 text-[11px] uppercase tracking-wider text-gray-400">or university credentials</span>
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+            </div>
+
+            <div id="auth-message" class="hidden p-3 rounded-xl text-xs font-medium"></div>
+
+            <!-- Email & Password Form -->
+            <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1.5">University Email</label>
+                    <input type="email" id="auth-email" required placeholder="student@university.ac.ke" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1.5">Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+                <div id="role-select-wrapper" class="hidden">
+                    <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-400 mb-1.5">Select Role</label>
+                    <select id="auth-role" class="w-full px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                        <option value="student">Student</option>
+                        <option value="lecturer">Lecturer / Faculty</option>
+                        <option value="admin">System Administrator</option>
+                    </select>
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm shadow-lg shadow-brand-600/20 transition">Sign In</button>
+            </form>
+
+            <div class="flex items-center justify-between pt-2 text-xs">
+                <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-brand-600 dark:text-brand-400 font-semibold hover:underline">Create an Account</button>
+                <button type="button" onclick="demoBypass()" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Quick Demo Preview &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MAIN WORKSPACE VIEW ================= -->
+    <div id="app-view" class="hidden flex-1 flex flex-col lg:flex-row min-h-screen">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-full lg:w-64 bg-white dark:bg-gray-900 border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 p-4 flex flex-col justify-between shrink-0">
+            <div class="space-y-6">
+                <!-- Brand & Theme Toggle -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold">
+                            <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        </div>
+                        <span class="font-bold text-lg tracking-tight">Campus OS</span>
+                    </div>
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition" title="Toggle Theme">
+                        <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Role Switcher -->
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Active Portal Role</p>
+                    <div class="grid grid-cols-3 gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl text-xs font-semibold">
+                        <button onclick="switchRole('student')" id="role-btn-student" class="py-1.5 rounded-lg bg-white dark:bg-gray-700 text-brand-600 dark:text-white shadow-sm transition">Student</button>
+                        <button onclick="switchRole('lecturer')" id="role-btn-lecturer" class="py-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">Lecturer</button>
+                        <button onclick="switchRole('admin')" id="role-btn-admin" class="py-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">Admin</button>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1">
+                    <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 transition">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="navigate('study')" id="nav-study" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                        <i data-lucide="book-open" class="w-4 h-4"></i>
+                        <span>Study Hub</span>
+                    </button>
+                    <button onclick="navigate('chat')" id="nav-chat" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                        <i data-lucide="message-square" class="w-4 h-4"></i>
+                        <span>Campus Chat</span>
+                    </button>
+                    <button onclick="navigate('gaming')" id="nav-gaming" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                        <i data-lucide="gamepad-2" class="w-4 h-4"></i>
+                        <span>Campus Arena</span>
+                    </button>
+                    <button onclick="navigate('schedule')" id="nav-schedule" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Timetable</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- User Footer -->
+            <div class="pt-4 mt-6 border-t border-gray-200 dark:border-gray-800 space-y-3">
+                <div class="flex items-center gap-2.5 px-1">
+                    <div class="w-8 h-8 rounded-full bg-brand-600/20 text-brand-500 flex items-center justify-center font-bold text-xs" id="user-avatar">U</div>
+                    <div class="overflow-hidden">
+                        <p id="user-display-email" class="text-xs font-semibold truncate">user@university.ac.ke</p>
+                        <p id="user-display-role" class="text-[10px] uppercase tracking-wider text-gray-400">Student Mode</p>
+                    </div>
+                </div>
+                <button onclick="handleSignOut()" class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-red-50 dark:hover:bg-red-950/30 text-xs font-semibold text-red-600 dark:text-red-400 transition">
+                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 lg:p-8 overflow-y-auto space-y-6">
+            
+            <!-- 1. DASHBOARD VIEW -->
+            <section id="view-dashboard" class="space-y-6">
+                <div class="bg-gradient-to-r from-brand-600 to-indigo-600 p-6 lg:p-8 rounded-2xl text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span id="role-badge" class="inline-block px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-semibold uppercase tracking-wider mb-2">Student Portal</span>
+                        <h2 id="banner-title" class="text-2xl font-bold">Welcome back to Campus OS</h2>
+                        <p id="banner-subtext" class="text-sm text-indigo-100 mt-1">Track your coursework, collaborate with peers, and manage your academic schedule.</p>
+                    </div>
+                    <button onclick="navigate('study')" class="self-start md:self-auto px-4 py-2.5 rounded-xl bg-white text-brand-700 font-semibold text-xs shadow hover:bg-indigo-50 transition">
+                        Open Study Hub &rarr;
+                    </button>
+                </div>
+
+                <!-- Dynamic Role KPIs -->
+                <div id="role-kpi-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5"></div>
+
+                <!-- Quick Announcements & Deadlines -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="bell" class="w-4 h-4 text-brand-500"></i> Campus Notices</h3>
+                            <span class="text-[11px] text-gray-400">Updated Today</span>
+                        </div>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+                                <p class="font-semibold text-gray-900 dark:text-gray-100">CAT 2 Examination Timetable Released</p>
+                                <p class="text-gray-500 dark:text-gray-400 mt-0.5">Check the Timetable tab for room allocations and invigilation schedules.</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+                                <p class="font-semibold text-gray-900 dark:text-gray-100">Research Project Proposal Submission</p>
+                                <p class="text-gray-500 dark:text-gray-400 mt-0.5">Final chapter drafts due to departmental supervisors by Friday 5:00 PM.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> Quick Action Items</h3>
+                        <div id="dashboard-tasks" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. STUDY HUB VIEW -->
+            <section id="view-study" class="hidden space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold">Study Hub</h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Pomodoro focus timer, task tracker, and quick revision notes.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Pomodoro Timer -->
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+                        <span class="px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-[11px] font-bold uppercase">Focus Session</span>
+                        <div id="pomodoro-display" class="text-5xl font-mono font-bold tracking-tight">25:00</div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleTimer()" id="pomodoro-start-btn" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition">Start Focus</button>
+                            <button onclick="resetTimer()" class="px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-semibold transition">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Study Task Manager -->
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="font-bold text-sm">Coursework & Revision Tasks</h3>
+                        <form onsubmit="addStudyTask(event)" class="flex gap-2">
+                            <input type="text" id="new-task-input" placeholder="Add an assignment, reading, or project milestone..." class="flex-1 px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-brand-600 text-white text-xs font-bold hover:bg-brand-700 transition">Add</button>
+                        </form>
+                        <ul id="study-task-list" class="space-y-2 text-xs"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. CAMPUS CHAT VIEW -->
+            <section id="view-chat" class="hidden space-y-4">
+                <div>
+                    <h2 class="text-xl font-bold">Campus Chatroom</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Real-time student & faculty discussion channels.</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden flex flex-col h-[520px]">
+                    <!-- Channel Header -->
+                    <div class="px-5 py-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/40">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span id="active-channel-title" class="font-bold text-xs"># general-campus</span>
+                        </div>
+                        <div class="flex gap-1.5 text-[11px]">
+                            <button onclick="switchChannel('# general-campus')" class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-medium"># general</button>
+                            <button onclick="switchChannel('# study-groups')" class="px-2.5 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 font-medium"># study-groups</button>
+                            <button onclick="switchChannel('# tech-and-gaming')" class="px-2.5 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 font-medium"># tech-gaming</button>
+                        </div>
+                    </div>
+
+                    <!-- Messages Box -->
+                    <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-3 text-xs">
+                        <div class="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 max-w-md">
+                            <p class="font-bold text-brand-500 mb-0.5">System Bot</p>
+                            <p>Welcome to Campus OS Chat! Keep discussions respectful and helpful.</p>
+                        </div>
+                    </div>
+
+                    <!-- Input Form -->
+                    <form onsubmit="sendChatMessage(event)" class="p-4 border-t border-gray-200 dark:border-gray-800 flex gap-2">
+                        <input type="text" id="chat-input" placeholder="Message the channel..." class="flex-1 px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition">Send</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. GAMING / CAMPUS ARENA VIEW -->
+            <section id="view-gaming" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold">Campus Arena</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Take a quick study break with brain trivia or reaction tests.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Quick Trivia -->
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm">Campus Brain Trivia</h3>
+                            <span id="trivia-score" class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-500 text-xs font-bold">Score: 0</span>
+                        </div>
+                        <p id="trivia-question" class="text-sm font-medium">Loading question...</p>
+                        <div id="trivia-options" class="grid grid-cols-1 gap-2"></div>
+                        <button onclick="loadNextTrivia()" class="text-xs text-brand-500 font-semibold hover:underline">Skip Question &rarr;</button>
+                    </div>
+
+                    <!-- Reflex Reaction Mini-Game -->
+                    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex flex-col justify-between space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm">Reflex Speed Test</h3>
+                            <span id="reflex-best" class="text-xs text-gray-400">Best: -- ms</span>
+                        </div>
+                        <div id="reflex-box" onclick="handleReflexClick()" class="h-40 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center cursor-pointer select-none font-bold text-sm transition">
+                            Click to Start Reflex Test
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. TIMETABLE VIEW -->
+            <section id="view-schedule" class="hidden space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold">Weekly Academic Timetable</h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Your scheduled lectures, labs, and consultation hours.</p>
+                </div>
+
+                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-50 dark:bg-gray-800/70 text-gray-500 dark:text-gray-400 uppercase text-[10px]">
+                                <tr>
+                                    <th class="px-5 py-3.5">Day</th>
+                                    <th class="px-5 py-3.5">Time</th>
+                                    <th class="px-5 py-3.5">Course Unit</th>
+                                    <th class="px-5 py-3.5">Venue</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr>
+                                    <td class="px-5 py-3.5 font-semibold">Monday</td>
+                                    <td class="px-5 py-3.5 text-gray-500">08:00 AM - 11:00 AM</td>
+                                    <td class="px-5 py-3.5 font-medium">Strategic Human Resource Management</td>
+                                    <td class="px-5 py-3.5">Lecture Hall 4</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-5 py-3.5 font-semibold">Tuesday</td>
+                                    <td class="px-5 py-3.5 text-gray-500">11:00 AM - 02:00 PM</td>
+                                    <td class="px-5 py-3.5 font-medium">Organizational Behavior & Leadership</td>
+                                    <td class="px-5 py-3.5">Business Complex B2</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-5 py-3.5 font-semibold">Wednesday</td>
+                                    <td class="px-5 py-3.5 text-gray-500">02:00 PM - 04:00 PM</td>
+                                    <td class="px-5 py-3.5 font-medium">Research Methods & Data Analysis</td>
+                                    <td class="px-5 py-3.5">Computer Lab 1</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-5 py-3.5 font-semibold">Thursday</td>
+                                    <td class="px-5 py-3.5 text-gray-500">09:00 AM - 12:00 PM</td>
+                                    <td class="px-5 py-3.5 font-medium">Labor Laws & Industrial Relations</td>
+                                    <td class="px-5 py-3.5">Main Auditorium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. SUPABASE CONFIGURATION
+        // ==========================================
+        const SUPABASE_URL = 'https://efnzjbwirhczmlvdzgrq.supabase.co';
+        const SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase && SUPABASE_ANON_KEY !== 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE') {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (err) {
+            console.warn('Supabase running in fallback mode:', err);
+        }
+
+        // Check active session on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.lucide) lucide.createIcons();
+            renderTasks();
+            loadNextTrivia();
+
+            if (supabaseClient) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session?.user) {
+                    launchWorkspace(session.user);
+                }
+                supabaseClient.auth.onAuthStateChange((_event, session) => {
+                    if (session?.user) launchWorkspace(session.user);
+                });
+            }
+        });
+
+        // ==========================================
+        // 2. AUTHENTICATION LOGIC
+        // ==========================================
+        let isSignUpMode = false;
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-submit-btn').textContent = isSignUpMode ? 'Create Account' : 'Sign In';
+            document.getElementById('auth-toggle-btn').textContent = isSignUpMode ? 'Already have an account? Sign In' : 'Create an Account';
+            document.getElementById('role-select-wrapper').classList.toggle('hidden', !isSignUpMode);
+            hideAuthMessage();
+        }
+
+        function showAuthMessage(text, isError = false) {
+            const box = document.getElementById('auth-message');
+            box.textContent = text;
+            box.className = `p-3 rounded-xl text-xs font-medium ${isError ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`;
+            box.classList.remove('hidden');
+        }
+
+        function hideAuthMessage() {
+            document.getElementById('auth-message').classList.add('hidden');
+        }
+
+        async function signInWithGoogle() {
+            if (!supabaseClient) {
+                showAuthMessage('Add your Supabase Anon Key in the code first to activate live Google OAuth, or click Quick Demo Preview.', true);
+                return;
+            }
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + window.location.pathname }
+            });
+            if (error) showAuthMessage(error.message, true);
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const role = document.getElementById('auth-role').value;
+
+            if (!supabaseClient) {
+                launchWorkspace({ email, user_metadata: { role } });
+                return;
+            }
+
+            if (isSignUpMode) {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { role } }
+                });
+                if (error) return showAuthMessage(error.message, true);
+                if (data.user) showAuthMessage('Account created! Check your email or sign in now.');
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) return showAuthMessage(error.message, true);
+                if (data.user) launchWorkspace(data.user);
+            }
+        }
+
+        function demoBypass() {
+            launchWorkspace({ email: 'student@campus-os.ac.ke', user_metadata: { role: 'student' } });
+        }
+
+        function launchWorkspace(user) {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
+            
+            const email = user.email || 'user@campus-os.ac.ke';
+            const role = user.user_metadata?.role || 'student';
+            
+            document.getElementById('user-display-email').textContent = email;
+            document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+            switchRole(role);
+        }
+
+        async function handleSignOut() {
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            document.getElementById('app-view').classList.add('hidden');
+            document.getElementById('auth-view').classList.remove('hidden');
+        }
+
+        // ==========================================
+        // 3. NAVIGATION & ROLE SWITCHING
+        // ==========================================
+        function navigate(viewId) {
+            ['dashboard', 'study', 'chat', 'gaming', 'schedule'].forEach(id => {
+                document.getElementById(`view-${id}`).classList.add('hidden');
+                const btn = document.getElementById(`nav-${id}`);
+                btn.className = 'nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition';
+            });
+
+            document.getElementById(`view-${viewId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${viewId}`);
+            activeBtn.className = 'nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 transition';
+        }
+
+        function switchRole(role) {
+            ['student', 'lecturer', 'admin'].forEach(r => {
+                const btn = document.getElementById(`role-btn-${r}`);
+                btn.className = r === role
+                    ? 'py-1.5 rounded-lg bg-white dark:bg-gray-700 text-brand-600 dark:text-white shadow-sm transition'
+                    : 'py-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition';
+            });
+
+            document.getElementById('user-display-role').textContent = `${role} Mode`;
+            document.getElementById('role-badge').textContent = `${role} Portal`;
+
+            const roleConfigs = {
+                student: {
+                    title: 'Welcome back, Scholar',
+                    subtext: 'Track your coursework, collaborate with peers, and manage your academic schedule.',
+                    kpis: [
+                        { label: 'Current GPA', value: '3.82 / 4.0', note: 'Dean’s List Standing' },
+                        { label: 'Class Attendance', value: '94%', note: 'Above 75% threshold' },
+                        { label: 'Pending Assignments', value: '2 Due', note: 'Next due Friday' }
+                    ]
+                },
+                lecturer: {
+                    title: 'Faculty Workspace',
+                    subtext: 'Manage course modules, review student submissions, and post announcements.',
+                    kpis: [
+                        { label: 'Active Units', value: '4 Courses', note: '310 Enrolled Students' },
+                        { label: 'Unmarked Scripts', value: '19 CATs', note: 'Due for grading' },
+                        { label: 'Next Lecture', value: '11:00 AM', note: 'Business Complex B2' }
+                    ]
+                },
+                admin: {
+                    title: 'System Administration',
+                    subtext: 'Monitor campus portal health, user registrations, and departmental schedules.',
+                    kpis: [
+                        { label: 'Active Users', value: '1,420', note: '+84 this week' },
+                        { label: 'Pending Approvals', value: '7 Requests', note: 'Role verifications' },
+                        { label: 'Portal Status', value: '99.9% Up', note: 'All services operational' }
+                    ]
+                }
+            };
+
+            const config = roleConfigs[role] || roleConfigs.student;
+            document.getElementById('banner-title').textContent = config.title;
+            document.getElementById('banner-subtext').textContent = config.subtext;
+
+            document.getElementById('role-kpi-grid').innerHTML = config.kpis.map(kpi => `
+                <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">${kpi.label}</p>
+                    <p class="text-2xl font-bold mt-1">${kpi.value}</p>
+                    <p class="text-[11px] text-brand-500 mt-1">${kpi.note}</p>
+                </div>
+            `).join('');
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            icon.setAttribute('data-lucide', html.classList.contains('dark') ? 'sun' : 'moon');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // ==========================================
+        // 4. STUDY HUB (POMODORO & TASKS)
+        // ==========================================
+        let timerSeconds = 25 * 60;
+        let timerInterval = null;
+
+        function toggleTimer() {
+            const btn = document.getElementById('pomodoro-start-btn');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.textContent = 'Resume Focus';
+            } else {
+                btn.textContent = 'Pause';
+                timerInterval = setInterval(() => {
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        btn.textContent = 'Start Focus';
+                        alert('Focus session complete! Take a 5-minute break.');
+                        return;
+                    }
+                    timerSeconds--;
+                    const m = Math.floor(timerSeconds / 60);
+                    const s = timerSeconds % 60;
+                    document.getElementById('pomodoro-display').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerSeconds = 25 * 60;
+            document.getElementById('pomodoro-display').textContent = '25:00';
+            document.getElementById('pomodoro-start-btn').textContent = 'Start Focus';
+        }
+
+        let tasks = [
+            { text: 'Finalize Research Project Literature Review', done: false },
+            { text: 'Prepare HR Case Study Presentation', done: true }
+        ];
+
+        function renderTasks() {
+            const list = document.getElementById('study-task-list');
+            const dashList = document.getElementById('dashboard-tasks');
+            const html = tasks.map((t, idx) => `
+                <li class="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+                    <label class="flex items-center gap-2.5 cursor-pointer">
+                        <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${idx})" class="rounded text-brand-600">
+                        <span class="${t.done ? 'line-through text-gray-400' : ''}">${t.text}</span>
+                    </label>
+                    <button onclick="deleteTask(${idx})" class="text-gray-400 hover:text-red-500 text-xs">Remove</button>
+                </li>
+            `).join('');
+            if (list) list.innerHTML = html;
+            if (dashList) dashList.innerHTML = html;
+        }
+
+        function addStudyTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('new-task-input');
+            if (!input.value.trim()) return;
+            tasks.unshift({ text: input.value.trim(), done: false });
+            input.value = '';
+            renderTasks();
+        }
+
+        function toggleTask(idx) {
+            tasks[idx].done = !tasks[idx].done;
+            renderTasks();
+        }
+
+        function deleteTask(idx) {
+            tasks.splice(idx, 1);
+            renderTasks();
+        }
+
+        // ==========================================
+        // 5. CAMPUS CHATROOM
+        // ==========================================
+        function switchChannel(channelName) {
+            document.getElementById('active-channel-title').textContent = channelName;
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 max-w-md">
+                    <p class="font-bold text-brand-500 mb-0.5">System Bot</p>
+                    <p>Switched to <strong>${channelName}</strong>. Start chatting below!</p>
+                </div>
+            `;
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const box = document.getElementById('chat-messages');
+            const userEmail = document.getElementById('user-display-email').textContent.split('@')[0];
+            box.innerHTML += `
+                <div class="p-3 rounded-xl bg-brand-600 text-white max-w-md ml-auto">
+                    <p class="font-bold text-[10px] text-indigo-200 mb-0.5">${userEmail}</p>
+                    <p>${text}</p>
+                </div>
+            `;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // ==========================================
+        // 6. CAMPUS ARENA (MINI-GAMES)
+        // ==========================================
+        const triviaBank = [
+            { q: 'Which HTTP status code represents "Not Found"?', opts: ['200', '403', '404', '500'], ans: 2 },
+            { q: 'What does HRM stand for in business studies?', opts: ['Human Resource Management', 'High Risk Marketing', 'Hybrid Revenue Model'], ans: 0 },
+            { q: 'Which language runs natively in the web browser?', opts: ['Python', 'JavaScript', 'C++', 'Java'], ans: 1 }
+        ];
+        let currentTriviaIdx = 0;
+        let triviaScore = 0;
+
+        function loadNextTrivia() {
+            const item = triviaBank[currentTriviaIdx % triviaBank.length];
+            document.getElementById('trivia-question').textContent = item.q;
+            document.getElementById('trivia-options').innerHTML = item.opts.map((opt, idx) => `
+                <button onclick="checkTrivia(${idx}, ${item.ans})" class="w-full text-left px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-brand-50 dark:hover:bg-brand-900/30 border border-gray-200 dark:border-gray-700 text-xs font-medium transition">
+                    ${opt}
+                </button>
+            `).join('');
+            currentTriviaIdx++;
+        }
+
+        function checkTrivia(selected, correct) {
+            if (selected === correct) {
+                triviaScore += 10;
+                document.getElementById('trivia-score').textContent = `Score: ${triviaScore}`;
+            }
+            loadNextTrivia();
+        }
+
+        let reflexState = 'idle';
+        let reflexStart = 0;
+        let reflexTimeout = null;
+        let bestReflex = Infinity;
+
+        function handleReflexClick() {
+            const box = document.getElementById('reflex-box');
+            if (reflexState === 'idle') {
+                reflexState = 'waiting';
+                box.className = 'h-40 rounded-xl bg-amber-500 text-white flex items-center justify-center cursor-pointer select-none font-bold text-sm transition';
+                box.textContent = 'Wait for Green...';
+                reflexTimeout = setTimeout(() => {
+                    reflexState = 'ready';
+                    reflexStart = performance.now();
+                    box.className = 'h-40 rounded-xl bg-emerald-500 text-white flex items-center justify-center cursor-pointer select-none font-bold text-sm transition';
+                    box.textContent = 'CLICK NOW!';
+                }, 1500 + Math.random() * 2000);
+            } else if (reflexState === 'waiting') {
+                clearTimeout(reflexTimeout);
+                reflexState = 'idle';
+                box.className = 'h-40 rounded-xl bg-red-500 text-white flex items-center justify-center cursor-pointer select-none font-bold text-sm transition';
+                box.textContent = 'Too early! Click to try again.';
+            } else if (reflexState === 'ready') {
+                const diff = Math.round(performance.now() - reflexStart);
+                if (diff < bestReflex) {
+                    bestReflex = diff;
+                    document.getElementById('reflex-best').textContent = `Best: ${bestReflex} ms`;
+                }
+                reflexState = 'idle';
+                box.className = 'h-40 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center cursor-pointer select-none font-bold text-sm transition';
+                box.textContent = `${diff} ms! Click to play again.`;
+            }
+        }
+    </script>
+</body>
+</html>
