@@ -3,221 +3,226 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#070b14" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Campus OS — Student Hub &amp; Chill Workspace</title>
+  <meta name="theme-color" content="#0f172a" />
+  <title>Campus OS — Student Cloud Desktop</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; user-select: none; }
-    input, textarea, select, .selectable-text { user-select: text; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #070b14;
-      color: #f8fafc;
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-    }
+    body { font-family: 'Inter', sans-serif; overflow: hidden; user-select: none; }
     .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-    .os-glass {
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.11);
-    }
-    .os-window {
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(148, 163, 184, 0.22);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.78);
-      transition: box-shadow 0.15s ease, border-color 0.15s ease;
-    }
-    .os-window.active-window {
-      border-color: rgba(99, 102, 241, 0.65);
-      box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.88), 0 0 0 1px rgba(99, 102, 241, 0.3);
-    }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.3); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.5); border-radius: 3px; }
+    .selectable-text { user-select: text; }
+
+    /* Dynamic Desktop Wallpapers */
     .wallpaper-nebula {
-      background: radial-gradient(circle at 18% 22%, rgba(99, 102, 241, 0.38), transparent 45%),
-                  radial-gradient(circle at 82% 78%, rgba(14, 165, 233, 0.3), transparent 50%),
-                  linear-gradient(135deg, #060913 0%, #0f172a 55%, #091326 100%);
+      background: radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.35), transparent 45%),
+                  radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.25), transparent 45%),
+                  linear-gradient(135deg, #070b14 0%, #0f172a 55%, #111827 100%);
     }
     .wallpaper-sunset {
-      background: radial-gradient(circle at 22% 20%, rgba(244, 63, 94, 0.32), transparent 45%),
-                  radial-gradient(circle at 78% 80%, rgba(245, 158, 11, 0.25), transparent 50%),
-                  linear-gradient(135deg, #0f0714 0%, #1e1024 55%, #110c1d 100%);
+      background: radial-gradient(circle at 20% 20%, rgba(244, 63, 94, 0.35), transparent 45%),
+                  radial-gradient(circle at 80% 75%, rgba(245, 158, 11, 0.28), transparent 45%),
+                  linear-gradient(135deg, #130912 0%, #1e1024 55%, #0f172a 100%);
     }
     .wallpaper-mint {
-      background: radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.32), transparent 45%),
-                  radial-gradient(circle at 80% 75%, rgba(45, 212, 191, 0.25), transparent 50%),
-                  linear-gradient(135deg, #040d0b 0%, #091e1a 55%, #06141a 100%);
+      background: radial-gradient(circle at 20% 25%, rgba(20, 184, 166, 0.32), transparent 45%),
+                  radial-gradient(circle at 85% 80%, rgba(56, 189, 248, 0.25), transparent 45%),
+                  linear-gradient(135deg, #041316 0%, #0b1f26 55%, #09111e 100%);
     }
     .wallpaper-midnight {
-      background: radial-gradient(circle at 50% 0%, rgba(148, 163, 184, 0.16), transparent 55%),
-                  linear-gradient(180deg, #080b12 0%, #111827 100%);
+      background: radial-gradient(circle at 50% 10%, rgba(148, 163, 184, 0.14), transparent 50%),
+                  linear-gradient(180deg, #03050a 0%, #090d16 100%);
     }
+
+    .os-glass {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .os-window {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+    }
+
+    .os-window.active-window {
+      border-color: rgba(129, 140, 248, 0.45);
+      box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(129, 140, 248, 0.2);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
   </style>
 </head>
-<body class="antialiased selection:bg-indigo-500 selection:text-white">
+<body class="text-slate-100 antialiased">
 
-  <!-- 1. LOGIN / BOOT SCREEN -->
-  <div id="auth-view" class="h-screen w-screen flex items-center justify-center p-4 wallpaper-nebula overflow-y-auto">
-    <div class="os-glass w-full max-w-md rounded-2xl p-8 shadow-2xl">
-      <div class="flex flex-col items-center text-center mb-7">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center shadow-lg shadow-indigo-600/30 mb-4 border border-white/15 text-2xl">
+  <!-- ==========================================
+       1. LOCK / LOGIN SCREEN
+  =========================================== -->
+  <div id="auth-view" class="wallpaper-nebula min-h-screen w-screen flex items-center justify-center p-4">
+    <div class="os-glass w-full max-w-md rounded-3xl p-7 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl mx-auto shadow-lg shadow-indigo-500/30">
           🚀
         </div>
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-[11px] font-medium mb-2">
-          <span>Campus OS v4.2</span>
-          <span>•</span>
-          <span>Global Chat + Private 1-on-1 DMs</span>
-        </div>
-        <h1 class="text-2xl font-bold tracking-tight text-white">Welcome to Campus OS</h1>
-        <p class="text-xs text-slate-400 mt-1">Your assistive study workspace, arcade &amp; live messenger hub</p>
+        <h1 class="text-2xl font-extrabold tracking-tight text-white">Campus OS</h1>
+        <p class="text-xs text-slate-400">Study, stream YouTube, chat live &amp; chill in one cloud desktop</p>
       </div>
 
-      <button id="google-login-btn" onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold py-2.5 px-4 rounded-xl transition duration-150 shadow-md cursor-pointer text-sm">
+      <div id="auth-alert" class="hidden p-3 rounded-xl border text-xs leading-relaxed"></div>
+
+      <button onclick="signInWithGoogle()" class="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-semibold text-sm flex items-center justify-center gap-2.5 shadow transition cursor-pointer">
         <svg class="w-4 h-4" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-          <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
-          <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
-          <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+          <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+          <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
+          <path fill="#FBBC05" d="M5.3 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.6 7.4C.6 9.4 0 11.6 0 14s.6 4.6 1.6 6.6l3.7-2.8z"/>
+          <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 21.4 7.4 24 12 24z"/>
         </svg>
-        <span>Continue with Google</span>
+        Continue with Google
       </button>
 
-      <div class="relative my-5">
-        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-700/80"></div></div>
-        <div class="relative flex justify-center text-[11px] uppercase"><span class="bg-slate-900 px-3 text-slate-400 tracking-wider">Or Email Login</span></div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-500">
+        <div class="h-[1px] flex-1 bg-white/10"></div>
+        <span>OR EMAIL</span>
+        <div class="h-[1px] flex-1 bg-white/10"></div>
       </div>
 
-      <div id="auth-alert" class="hidden mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs leading-relaxed"></div>
-
-      <form id="email-auth-form" onsubmit="handleEmailAuth(event)" class="space-y-3.5">
-        <div>
-          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Email Address</label>
-          <input id="email-input" type="email" required placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition" />
-        </div>
-        <div>
-          <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Password</label>
-          <input id="password-input" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition" />
-        </div>
-        <button id="submit-auth-btn" type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition shadow-lg shadow-indigo-600/20 cursor-pointer">
+      <form onsubmit="handleEmailAuth(event)" class="space-y-3">
+        <input id="email-input" type="email" required placeholder="student@university.edu" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+        <input id="password-input" type="password" required minlength="6" placeholder="Password (min 6 chars)" class="w-full px-4 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+        <button id="submit-auth-btn" type="submit" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition cursor-pointer">
           Boot into Desktop
         </button>
       </form>
 
-      <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
+      <div class="flex items-center justify-between text-xs pt-1">
         <button id="toggle-auth-mode" onclick="toggleAuthMode()" class="text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer">
           Create an Account
         </button>
-        <button onclick="enterDemoMode()" class="text-slate-400 hover:text-white font-medium cursor-pointer">
-          Guest Mode (Read-Only) →
+        <button onclick="enterDemoMode()" class="text-slate-400 hover:text-white cursor-pointer">
+          Explore as Guest →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- 2. CAMPUS OS DESKTOP ENVIRONMENT -->
-  <div id="desktop-view" class="hidden h-screen w-screen flex flex-col wallpaper-nebula relative overflow-hidden">
+  <!-- ==========================================
+       2. DESKTOP ENVIRONMENT
+  =========================================== -->
+  <div id="desktop-view" class="hidden wallpaper-nebula h-screen w-screen flex flex-col justify-between relative overflow-hidden">
 
-    <!-- TOP SYSTEM BAR -->
-    <header class="h-9 px-4 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between text-xs z-50 shrink-0 gap-2">
-      <div class="flex items-center gap-3 shrink-0">
-        <button onclick="toggleStartMenu()" class="flex items-center gap-2 font-bold text-white hover:text-indigo-400 transition cursor-pointer">
-          <span class="w-5 h-5 rounded bg-indigo-600 flex items-center justify-center text-[11px]">🚀</span>
+    <!-- TOP STATUS BAR -->
+    <header class="h-9 px-4 bg-slate-950/75 backdrop-blur-xl border-b border-white/10 flex items-center justify-between text-xs z-50 shrink-0">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleStartMenu()" class="flex items-center gap-1.5 font-bold text-white hover:text-indigo-300 transition cursor-pointer">
+          <span>🚀</span>
           <span>Campus OS</span>
         </button>
-        <span class="text-slate-600 hidden sm:inline">|</span>
-        <button onclick="toggleSpotlight(true)" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-[11px] cursor-pointer transition">
-          <span>🔍 Quick Jump</span>
-          <span class="text-[9px] text-slate-500 font-mono-code hidden md:inline">Ctrl+K</span>
+        <span id="cloud-sync-badge" class="hidden sm:inline px-2 py-0.5 text-[10px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 rounded-full">
+          ☁️ Live
+        </span>
+      </div>
+
+      <!-- Top Bar YouTube Mini-Player Pill -->
+      <div id="yt-mini-pill" class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-[11px] text-rose-200 max-w-xs">
+        <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0"></span>
+        <span id="yt-mini-title" onclick="openApp('youtube')" class="truncate cursor-pointer hover:underline font-medium">Lo-Fi Beats</span>
+        <button onclick="cycleYouTubePreset()" class="hover:text-white px-1 cursor-pointer" title="Next Station">⏭</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSpotlight()" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] text-slate-300 cursor-pointer">
+          <span>🔍</span>
+          <span>Search</span>
+          <kbd class="text-[9px] px-1 rounded bg-slate-800 text-slate-400">Ctrl+K</kbd>
         </button>
-      </div>
-
-      <div id="yt-mini-pill" class="hidden md:flex items-center gap-2 px-3 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[11px] max-w-xs">
-        <span class="text-rose-400">▶️</span>
-        <span id="yt-mini-title" onclick="openApp('youtube')" class="text-slate-200 truncate cursor-pointer hover:text-white font-medium">Lo-Fi Radio</span>
-        <button onclick="cycleYouTubePreset()" class="text-slate-300 hover:text-white px-1 cursor-pointer" title="Next Station">⏭</button>
-        <button onclick="openApp('youtube')" class="text-rose-300 hover:text-white px-1 cursor-pointer" title="Expand Player">⤢</button>
-      </div>
-
-      <div class="flex items-center gap-3 text-slate-300 shrink-0">
-        <span id="cloud-sync-badge" class="hidden sm:inline px-2 py-0.5 text-[10px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 rounded-full">☁️ Live</span>
-        <span id="os-clock" class="font-mono-code text-[11px] text-slate-200">12:00 PM</span>
-        <button onclick="signOut()" class="px-2.5 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] font-medium transition cursor-pointer">
+        <span id="os-clock" class="font-mono-code text-slate-200 font-semibold">12:00 PM</span>
+        <button onclick="signOut()" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-[11px] font-medium transition cursor-pointer">
           Sign Out
         </button>
       </div>
     </header>
 
-    <!-- MAIN DESKTOP CANVAS -->
-    <main id="desktop-canvas" class="flex-1 relative overflow-hidden p-4 sm:p-6">
+    <!-- MAIN WORKSPACE AREA -->
+    <main class="flex-1 relative overflow-hidden p-4">
 
-      <!-- Desktop Shortcut Icons Grid -->
-      <div class="grid grid-flow-col grid-rows-5 gap-2.5 w-fit z-10 relative">
-        <button onclick="openApp('youtube')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">▶️</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">YouTube Music</span>
+      <!-- DESKTOP APP SHORTCUT ICONS (LEFT) -->
+      <div class="grid grid-flow-col grid-rows-5 gap-3 w-fit z-10 relative">
+        <button onclick="openApp('youtube')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">▶️</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">YouTube</span>
         </button>
-        <button onclick="openApp('focus')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+
+        <button onclick="openApp('focus')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🎧</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Focus Timer</span>
+          <span class="text-[11px] font-medium text-white drop-shadow">Focus Timer</span>
         </button>
-        <button onclick="openApp('tasks')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+
+        <button onclick="openApp('tasks')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">✅</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Tasks &amp; Goals</span>
+          <span class="text-[11px] font-medium text-white drop-shadow">Tasks</span>
         </button>
-        <button onclick="openApp('notes')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+
+        <button onclick="openApp('notes')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">📝</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Scratchpad</span>
+          <span class="text-[11px] font-medium text-white drop-shadow">Scratchpad</span>
         </button>
-        <button onclick="openApp('study')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧠</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Study Buddy</span>
+
+        <button onclick="openApp('study')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧠</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Study Buddy</span>
         </button>
-        <button onclick="openApp('lounge')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">💬</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Messenger</span>
+
+        <button onclick="openApp('lounge')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">💬</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Messenger</span>
         </button>
-        <button onclick="openApp('arcade')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🕹️</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Arcade Zone</span>
+
+        <button onclick="openApp('arcade')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🕹️</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Arcade Zone</span>
         </button>
-        <button onclick="openApp('habits')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🔥</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Habit Streaks</span>
+
+        <button onclick="openApp('habits')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🔥</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Habits</span>
         </button>
-        <button onclick="openApp('calc')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
-          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧮</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Sci Calculator</span>
+
+        <button onclick="openApp('calc')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧮</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Calculator</span>
+        </button>
+
+        <button onclick="openApp('settings')" class="group w-20 p-2 rounded-2xl hover:bg-white/10 flex flex-col items-center gap-1.5 text-center transition cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🎨</div>
+          <span class="text-[11px] font-medium text-white drop-shadow">Personalize</span>
         </button>
       </div>
 
-      <!-- Right-Side Live Community, Deadlines & Profile Widget -->
-      <div class="hidden lg:block absolute top-6 right-6 w-72 os-glass rounded-2xl p-4 z-10 space-y-3">
-        <div class="flex items-center gap-3 overflow-hidden">
-          <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-lg font-bold text-indigo-300" id="widget-avatar">S</div>
+      <!-- DESKTOP PROFILE & LIVE STATUS WIDGET (RIGHT) -->
+      <div class="hidden lg:block absolute top-5 right-5 w-72 os-glass rounded-2xl p-4 space-y-3.5 z-10 shadow-xl">
+        <div class="flex items-center gap-3">
+          <div id="widget-avatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
+            S
+          </div>
           <div class="overflow-hidden">
             <p id="widget-name" class="text-sm font-bold text-white truncate">Student</p>
-            <p id="widget-status" class="text-[11px] text-slate-400 truncate">✨ Ready to focus &amp; chill</p>
+            <p id="widget-status" class="text-[11px] text-indigo-300 truncate">✨ Ready to focus &amp; chill</p>
           </div>
         </div>
 
-        <div class="flex items-center justify-between px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px]">
+        <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px]">
           <span class="flex items-center gap-1.5 text-emerald-300 font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span id="online-users-count">1 online now</span>
           </span>
-          <button onclick="openApp('lounge')" class="text-emerald-200 hover:underline cursor-pointer">Open Chat →</button>
+          <button onclick="openApp('lounge')" class="text-emerald-300 hover:text-emerald-200 hover:underline cursor-pointer">Open Chat →</button>
         </div>
 
         <div class="grid grid-cols-3 gap-2 text-center">
@@ -234,17 +239,6 @@
             <p id="widget-top-snake" class="text-sm font-bold text-rose-400">0</p>
           </div>
         </div>
-
-        <div class="pt-2 border-t border-white/10">
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Countdown</span>
-            <button onclick="editDeadlineCountdown()" class="text-[10px] text-indigo-400 hover:underline cursor-pointer">Edit</button>
-          </div>
-          <div class="px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 flex items-center justify-between">
-            <span id="countdown-title" class="text-xs font-medium text-slate-200 truncate">End of Semester</span>
-            <span id="countdown-days" class="font-mono-code text-xs font-bold text-indigo-400 shrink-0 ml-2">14d left</span>
-          </div>
-        </div>
       </div>
 
       <!-- FLOATING APP WINDOWS LAYER -->
@@ -253,7 +247,7 @@
       <!-- SPOTLIGHT COMMAND PALETTE (Ctrl+K) -->
       <div id="spotlight-modal" onclick="if(event.target===this) toggleSpotlight(false)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4">
         <div class="os-glass w-full max-w-lg rounded-2xl p-4 shadow-2xl border border-indigo-400/30 space-y-3">
-          <input id="spotlight-input" type="text" oninput="renderSpotlightResults(this.value)" placeholder="Type an app name, search notes, or run a command..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 text-sm text-white focus:outline-none focus:border-indigo-500" />
+          <input id="spotlight-input" type="text" autocomplete="off" oninput="renderSpotlightResults(this.value)" placeholder="Type an app name, search notes, or run a command..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 text-sm text-white focus:outline-none focus:border-indigo-500" />
           <div id="spotlight-results" class="max-h-64 overflow-y-auto custom-scrollbar space-y-1"></div>
         </div>
       </div>
@@ -376,21 +370,20 @@
     let chatErrorMsg = '';
 
     // Messenger & Direct Message State
-    let activeChatChannel = 'All';     // 'All' | 'Study' | 'Music' | 'Chill'
-    let activeDmRecipient = null;      // { user_id, name, online } or null for Global Room
-    let onlinePeers = [];              // [{ user_id, name, status, isSelf }]
-    let directMessages = [];           // Loaded 1-on-1 messages involving currentUser
-    let unreadDmCounts = {};           // { [sender_id]: number }
+    let activeChatChannel = 'All';
+    let activeDmRecipient = null;
+    let onlinePeers = [];
+    let directMessages = [];
+    let unreadDmCounts = {};
     let replyingToMessage = null;
     let typingUserBanner = '';
     let typingClearTimeout = null;
+    let draftChatInput = '';
 
     let userPrefs = JSON.parse(localStorage.getItem('campus_os_prefs')) || {
       nickname: 'Student',
       status: '✨ Ready to focus & chill',
-      wallpaper: 'wallpaper-nebula',
-      deadlineTitle: 'End of Semester',
-      deadlineDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
+      wallpaper: 'wallpaper-nebula'
     };
 
     let tasks = JSON.parse(localStorage.getItem('campus_os_tasks_v2')) || [
@@ -609,6 +602,7 @@
       activeDmRecipient = null;
       directMessages = [];
       unreadDmCounts = {};
+      draftChatInput = '';
       stopAmbientSound();
       clearInterval(pomodoroInterval);
       clearInterval(snakeInterval);
@@ -653,6 +647,34 @@
       return Object.values(unreadDmCounts).reduce((sum, n) => sum + (n || 0), 0);
     }
 
+    function getChatInputEl() {
+      return document.querySelector('#win-body-lounge textarea[data-chat-composer="1"]');
+    }
+
+    // Safe re-render of Messenger that preserves typed input and cursor position
+    function safeRenderLounge(autoScroll = false) {
+      if (!openWindows['lounge']) return;
+      const existingInput = getChatInputEl();
+      const hadFocus = document.activeElement === existingInput;
+      const selStart = existingInput?.selectionStart ?? null;
+      const selEnd = existingInput?.selectionEnd ?? null;
+      if (existingInput) draftChatInput = existingInput.value;
+
+      renderAppContent('lounge');
+
+      const restoredInput = getChatInputEl();
+      if (restoredInput) {
+        restoredInput.value = draftChatInput;
+        if (hadFocus) {
+          restoredInput.focus();
+          if (selStart !== null && selEnd !== null) {
+            try { restoredInput.setSelectionRange(selStart, selEnd); } catch (_) {}
+          }
+        }
+      }
+      if (autoScroll) scrollChatToBottom();
+    }
+
     async function fetchLoungePosts(autoScroll = false) {
       const { data, error } = await supabaseClient
         .from('campus_lounge_posts')
@@ -667,11 +689,11 @@
 
       chatErrorMsg = '';
       if (data) {
+        const changed = JSON.stringify(data.map(d => d.id + ':' + d.likes)) !== JSON.stringify(loungePosts.map(d => d.id + ':' + d.likes));
         loungePosts = data;
         localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-        if (openWindows['lounge'] && !activeDmRecipient) {
-          renderAppContent('lounge');
-          if (autoScroll) scrollChatToBottom();
+        if (changed && openWindows['lounge'] && !activeDmRecipient) {
+          safeRenderLounge(autoScroll);
         }
       }
     }
@@ -691,10 +713,10 @@
       }
 
       if (data) {
+        const changed = JSON.stringify(data.map(d => d.id)) !== JSON.stringify(directMessages.map(d => d.id));
         directMessages = data;
-        if (openWindows['lounge'] && activeDmRecipient) {
-          renderAppContent('lounge');
-          if (autoScroll) scrollChatToBottom();
+        if (changed && openWindows['lounge'] && activeDmRecipient) {
+          safeRenderLounge(autoScroll);
         }
       }
     }
@@ -703,8 +725,7 @@
       activeDmRecipient = null;
       replyingToMessage = null;
       typingUserBanner = '';
-      renderAppContent('lounge');
-      scrollChatToBottom();
+      safeRenderLounge(true);
     }
 
     function openDirectChat(userId, userName) {
@@ -715,8 +736,7 @@
       replyingToMessage = null;
       typingUserBanner = '';
       renderDock();
-      renderAppContent('lounge');
-      scrollChatToBottom();
+      safeRenderLounge(true);
     }
 
     async function initLiveRealtimeAndCloud(demo) {
@@ -774,24 +794,21 @@
       });
 
       liveChannel
-        // Global room broadcast
         .on('broadcast', { event: 'new_chat_msg' }, ({ payload }) => {
           if (!payload) return;
           if (!loungePosts.some(p => String(p.id) === String(payload.id))) {
             loungePosts.unshift(payload);
             localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
             if (openWindows['lounge'] && !activeDmRecipient) {
-              renderAppContent('lounge');
-              scrollChatToBottom();
+              safeRenderLounge(true);
             }
           }
         })
         .on('broadcast', { event: 'delete_chat_msg' }, ({ payload }) => {
           if (!payload?.id) return;
           loungePosts = loungePosts.filter(p => String(p.id) !== String(payload.id));
-          if (openWindows['lounge'] && !activeDmRecipient) renderAppContent('lounge');
+          if (openWindows['lounge'] && !activeDmRecipient) safeRenderLounge(false);
         })
-        // Private 1-on-1 DM broadcast
         .on('broadcast', { event: 'new_dm_msg' }, ({ payload }) => {
           if (!payload || isDemoMode || !currentUser?.id) return;
           if (payload.recipient_id !== currentUser.id && payload.sender_id !== currentUser.id) return;
@@ -804,17 +821,15 @@
               renderDock();
             }
             if (openWindows['lounge']) {
-              renderAppContent('lounge');
-              if (isViewingThisThread) scrollChatToBottom();
+              safeRenderLounge(isViewingThisThread);
             }
           }
         })
         .on('broadcast', { event: 'delete_dm_msg' }, ({ payload }) => {
           if (!payload?.id) return;
           directMessages = directMessages.filter(m => String(m.id) !== String(payload.id));
-          if (openWindows['lounge'] && activeDmRecipient) renderAppContent('lounge');
+          if (openWindows['lounge'] && activeDmRecipient) safeRenderLounge(false);
         })
-        // Typing indicators (Global or Private DM)
         .on('broadcast', { event: 'user_typing' }, ({ payload }) => {
           if (!payload || payload.user_id === currentUser?.id) return;
           const isDmTyping = Boolean(payload.dm_to);
@@ -833,7 +848,6 @@
             if (el2) el2.textContent = '';
           }, 2500);
         })
-        // Database table realtime listeners
         .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_lounge_posts' }, () => {
           fetchLoungePosts(false);
         })
@@ -852,7 +866,6 @@
             if (openWindows['arcade']) renderAppContent('arcade');
           }
         })
-        // Presence tracking for online 1-on-1 DM directory
         .on('presence', { event: 'sync' }, () => {
           const state = liveChannel.presenceState();
           const map = new Map();
@@ -874,7 +887,11 @@
           if (el) el.textContent = `${count} online now`;
           const chatOnline = document.getElementById('chat-header-online');
           if (chatOnline) chatOnline.textContent = `${count} online`;
-          if (openWindows['lounge']) renderAppContent('lounge');
+
+          // Skip re-render while user is actively typing in the chat box
+          if (openWindows['lounge'] && document.activeElement !== getChatInputEl()) {
+            safeRenderLounge(false);
+          }
         })
         .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
@@ -889,7 +906,7 @@
         });
 
       setInterval(() => {
-        if (openWindows['lounge'] && !openWindows['lounge'].minimized) {
+        if (openWindows['lounge'] && !openWindows['lounge'].minimized && document.activeElement !== getChatInputEl()) {
           if (activeDmRecipient) fetchDirectMessages(false);
           else fetchLoungePosts(false);
         }
@@ -1581,17 +1598,6 @@
       await pushWorkspaceToCloud();
     }
 
-    function editDeadlineCountdown() {
-      const title = prompt('Milestone or Exam Title:', userPrefs.deadlineTitle);
-      if (!title) return;
-      const date = prompt('Target Date (YYYY-MM-DD):', userPrefs.deadlineDate);
-      if (!date) return;
-      userPrefs.deadlineTitle = title.trim();
-      userPrefs.deadlineDate = date.trim();
-      updateWidgets();
-      pushWorkspaceToCloud();
-    }
-
     // ==========================================
     // APP CONTENT RENDERERS
     // ==========================================
@@ -1604,8 +1610,8 @@
         const embedUrl = getYouTubeEmbedUrl(activeYtSource);
         body.innerHTML = `
           <div class="space-y-3.5">
-            <form onsubmit="handleYouTubeSearchOrUrl(event)" class="flex gap-2">
-              <input id="yt-url-input" type="text" required placeholder="Search songs, artists, mixes OR paste YouTube URL..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
+            <form onsubmit="handleYouTubeSearchOrUrl(event)" autocomplete="off" class="flex gap-2">
+              <input id="yt-url-input" type="text" autocomplete="off" required placeholder="Search songs, artists, mixes OR paste YouTube URL..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
               <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold cursor-pointer shrink-0">Search / Play</button>
             </form>
             <div class="relative w-full rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg" style="padding-top: 52%;">
@@ -1677,8 +1683,8 @@
       if (appId === 'tasks') {
         body.innerHTML = `
           <div class="space-y-4">
-            <form onsubmit="addOsTask(event)" class="flex gap-2">
-              <input id="os-task-title" type="text" required placeholder="Add a study task, goal, or reminder..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-emerald-500" />
+            <form onsubmit="addOsTask(event)" autocomplete="off" class="flex gap-2">
+              <input id="os-task-title" type="text" autocomplete="off" required placeholder="Add a study task, goal, or reminder..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-emerald-500" />
               <select id="os-task-tag" class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-slate-300 focus:outline-none">
                 <option value="Study">Study</option>
                 <option value="Focus">Focus</option>
@@ -1723,7 +1729,7 @@
             </div>
             <div class="col-span-2 flex flex-col gap-2">
               ${currentNote ? `
-                <input type="text" value="${currentNote.title}" oninput="updateNoteField(${currentNote.id}, 'title', this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-amber-400" />
+                <input type="text" autocomplete="off" value="${currentNote.title}" oninput="updateNoteField(${currentNote.id}, 'title', this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-amber-400" />
                 <textarea oninput="updateNoteField(${currentNote.id}, 'content', this.value)" class="flex-1 w-full p-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-slate-200 leading-relaxed focus:outline-none focus:border-amber-400 resize-none font-mono-code">${currentNote.content}</textarea>
                 <div class="flex justify-between items-center text-[10px] text-slate-400">
                   <span>☁️ Synced to your account</span>
@@ -1739,7 +1745,6 @@
       if (appId === 'lounge') {
         const isDmMode = Boolean(activeDmRecipient);
 
-        // Build Direct Message contacts list (online authenticated peers + past DM partners)
         const dmContactsMap = new Map();
         onlinePeers.forEach(p => {
           if (!p.isSelf && !p.isGuest) {
@@ -1755,7 +1760,6 @@
         });
         const dmContacts = Array.from(dmContactsMap.values());
 
-        // Filter messages for either Global Room or Active 1-on-1 DM Thread
         const displayedMessages = isDmMode
           ? directMessages.filter(m =>
               (m.sender_id === currentUser?.id && m.recipient_id === activeDmRecipient.user_id) ||
@@ -1829,7 +1833,7 @@
                 ` : `
                   <div class="flex items-center gap-1.5 overflow-x-auto">
                     ${['All', 'Study', 'Music', 'Chill'].map(ch => `
-                      <button onclick="activeChatChannel='${ch}'; renderAppContent('lounge'); scrollChatToBottom()" class="px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer transition ${
+                      <button onclick="activeChatChannel='${ch}'; safeRenderLounge(true)" class="px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer transition ${
                         activeChatChannel === ch
                           ? 'bg-sky-600 text-white shadow-sm shadow-sky-500/30'
                           : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
@@ -1929,7 +1933,7 @@
                     </div>
                   ` : ''}
 
-                  <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
+                  <div class="flex items-end gap-2">
                     ${!isDmMode ? `
                       <select id="lounge-tag-select" class="px-2.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-300 focus:outline-none">
                         <option value="Chill" ${activeChatChannel === 'Chill' ? 'selected' : ''}>#Chill</option>
@@ -1937,15 +1941,26 @@
                         <option value="Music" ${activeChatChannel === 'Music' ? 'selected' : ''}>#Music</option>
                       </select>
                     ` : ''}
-                    <input id="lounge-input" type="text" required oninput="broadcastTypingStatus()" placeholder="${
-                      replyingToMessage
-                        ? `Reply to ${replyingToMessage.author}...`
-                        : (isDmMode ? `Private message to ${activeDmRecipient.name}...` : 'Message everyone on campus...')
-                    }" class="flex-1 px-4 py-2.5 rounded-full bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500" />
-                    <button type="submit" class="w-9 h-9 rounded-full ${isDmMode ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-sky-600 hover:bg-sky-500'} text-white flex items-center justify-center shadow-lg cursor-pointer shrink-0 transition" title="Send">
+                    <textarea
+                      data-chat-composer="1"
+                      rows="1"
+                      autocomplete="new-password"
+                      autocorrect="off"
+                      autocapitalize="sentences"
+                      spellcheck="true"
+                      oninput="draftChatInput = this.value; this.style.height='auto'; this.style.height=Math.min(this.scrollHeight, 96)+'px'; broadcastTypingStatus();"
+                      onkeydown="if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleChatSubmit(); }"
+                      placeholder="${
+                        replyingToMessage
+                          ? `Reply to ${replyingToMessage.author}...`
+                          : (isDmMode ? `Private message to ${activeDmRecipient.name}...` : 'Message everyone on campus...')
+                      }"
+                      class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 resize-none leading-normal max-h-24 overflow-y-auto"
+                    >${escapeHtml(draftChatInput)}</textarea>
+                    <button type="button" onclick="handleChatSubmit()" class="w-9 h-9 rounded-full ${isDmMode ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-sky-600 hover:bg-sky-500'} text-white flex items-center justify-center shadow-lg cursor-pointer shrink-0 transition" title="Send">
                       ➤
                     </button>
-                  </form>
+                  </div>
                 `}
               </div>
             </div>
@@ -1972,10 +1987,10 @@
                 <button onclick="flipFlashcard()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Flip</button>
                 <button onclick="nextFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">Next →</button>
               </div>
-              <form onsubmit="addFlashcard(event)" class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <input id="fc-q" type="text" required placeholder="New question / term..." class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+              <form onsubmit="addFlashcard(event)" autocomplete="off" class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input id="fc-q" type="text" autocomplete="off" required placeholder="New question / term..." class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
                 <div class="flex gap-2">
-                  <input id="fc-a" type="text" required placeholder="Answer / definition..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                  <input id="fc-a" type="text" autocomplete="off" required placeholder="Answer / definition..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
                   <button type="submit" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+</button>
                 </div>
               </form>
@@ -2067,8 +2082,8 @@
       if (appId === 'habits') {
         body.innerHTML = `
           <div class="space-y-4">
-            <form onsubmit="addHabit(event)" class="flex gap-2">
-              <input id="new-habit-input" type="text" required placeholder="Add a daily habit (e.g. Read 20 pages)..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-orange-500" />
+            <form onsubmit="addHabit(event)" autocomplete="off" class="flex gap-2">
+              <input id="new-habit-input" type="text" autocomplete="off" required placeholder="Add a daily habit (e.g. Read 20 pages)..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-orange-500" />
               <button type="submit" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold cursor-pointer">Add</button>
             </form>
             <div class="space-y-2.5">
@@ -2134,15 +2149,15 @@
                 <button onclick="setWallpaper('wallpaper-midnight')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${userPrefs.wallpaper === 'wallpaper-midnight' ? 'border-slate-400 bg-slate-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌑 Midnight OLED</button>
               </div>
             </div>
-            <form onsubmit="saveUserPrefs(event)" class="space-y-3 pt-3 border-t border-white/10">
+            <form onsubmit="saveUserPrefs(event)" autocomplete="off" class="space-y-3 pt-3 border-t border-white/10">
               <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Your Desktop Identity</p>
               <div>
                 <label class="block text-[11px] text-slate-400 mb-1">Display Nickname</label>
-                <input id="pref-nick" type="text" value="${userPrefs.nickname}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                <input id="pref-nick" type="text" autocomplete="off" value="${userPrefs.nickname}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
               </div>
               <div>
                 <label class="block text-[11px] text-slate-400 mb-1">Mood / Status Line</label>
-                <input id="pref-status" type="text" value="${userPrefs.status}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                <input id="pref-status" type="text" autocomplete="off" value="${userPrefs.status}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
               </div>
               <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">Save &amp; Sync Profile</button>
             </form>
@@ -2183,11 +2198,6 @@
       document.getElementById('widget-tasks-count').textContent = tasks.filter(t => !t.done).length;
       const doneHabits = habits.filter(h => h.doneToday).length;
       document.getElementById('widget-habits-count').textContent = `${doneHabits}/${habits.length}`;
-
-      document.getElementById('countdown-title').textContent = userPrefs.deadlineTitle || 'End of Semester';
-      const target = new Date(userPrefs.deadlineDate);
-      const diffDays = Math.max(0, Math.ceil((target - new Date()) / 86400000));
-      document.getElementById('countdown-days').textContent = `${diffDays}d left`;
     }
 
     async function createNewNote() {
@@ -2242,30 +2252,31 @@
         author: activeDmRecipient ? target.sender_name : target.author,
         text: (target.content || target.text || '').slice(0, 90)
       };
-      renderAppContent('lounge');
-      setTimeout(() => document.getElementById('lounge-input')?.focus(), 20);
+      safeRenderLounge(false);
+      setTimeout(() => getChatInputEl()?.focus(), 20);
     }
 
     function cancelReply() {
       replyingToMessage = null;
-      renderAppContent('lounge');
+      safeRenderLounge(false);
     }
 
     async function handleChatSubmit(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
       if (activeDmRecipient) await sendDirectMessage();
       else await addLoungePost();
     }
 
     async function sendDirectMessage() {
       if (isDemoMode || !currentUser?.id || !activeDmRecipient) return;
-      const input = document.getElementById('lounge-input');
-      const text = input.value.trim();
+      const input = getChatInputEl();
+      const text = (input ? input.value : draftChatInput).trim();
       if (!text) return;
 
       const replySnap = replyingToMessage ? { ...replyingToMessage } : null;
       replyingToMessage = null;
-      input.value = '';
+      draftChatInput = '';
+      if (input) input.value = '';
 
       const optimisticDm = {
         id: 'temp-dm-' + Date.now(),
@@ -2280,8 +2291,8 @@
       };
 
       directMessages.push(optimisticDm);
-      renderAppContent('lounge');
-      scrollChatToBottom();
+      safeRenderLounge(true);
+      setTimeout(() => getChatInputEl()?.focus(), 10);
 
       if (liveChannel) {
         liveChannel.send({
@@ -2307,19 +2318,18 @@
 
       if (error) {
         chatErrorMsg = `DM error: ${error.message}`;
-        renderAppContent('lounge');
+        safeRenderLounge(false);
       } else if (data) {
         chatErrorMsg = '';
         directMessages = directMessages.map(m => m.id === optimisticDm.id ? data : m);
-        renderAppContent('lounge');
-        scrollChatToBottom();
+        safeRenderLounge(true);
       }
     }
 
     async function deleteDirectMessage(id) {
       if (isDemoMode || !currentUser?.id) return;
       directMessages = directMessages.filter(m => String(m.id) !== String(id));
-      renderAppContent('lounge');
+      safeRenderLounge(false);
 
       if (liveChannel) {
         liveChannel.send({
@@ -2341,15 +2351,16 @@
     async function addLoungePost() {
       if (isDemoMode || !currentUser?.id) return;
 
-      const input = document.getElementById('lounge-input');
+      const input = getChatInputEl();
       const tagSelect = document.getElementById('lounge-tag-select');
-      const text = input.value.trim();
+      const text = (input ? input.value : draftChatInput).trim();
       const tag = tagSelect ? tagSelect.value : 'Chill';
       if (!text) return;
 
       const replySnap = replyingToMessage ? { ...replyingToMessage } : null;
       replyingToMessage = null;
-      input.value = '';
+      draftChatInput = '';
+      if (input) input.value = '';
 
       const optimisticPost = {
         id: 'temp-' + Date.now(),
@@ -2366,8 +2377,8 @@
 
       loungePosts.unshift(optimisticPost);
       localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-      renderAppContent('lounge');
-      scrollChatToBottom();
+      safeRenderLounge(true);
+      setTimeout(() => getChatInputEl()?.focus(), 10);
 
       if (liveChannel) {
         liveChannel.send({
@@ -2394,20 +2405,19 @@
 
       if (error) {
         chatErrorMsg = `Database note: ${error.message}`;
-        renderAppContent('lounge');
+        safeRenderLounge(false);
       } else if (data) {
         chatErrorMsg = '';
         loungePosts = loungePosts.map(p => p.id === optimisticPost.id ? data : p);
         localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-        renderAppContent('lounge');
-        scrollChatToBottom();
+        safeRenderLounge(true);
       }
     }
 
     async function likeLoungePost(id, currentLikes) {
       if (isDemoMode) return;
       loungePosts = loungePosts.map(p => String(p.id) === String(id) ? { ...p, likes: (p.likes || 0) + 1 } : p);
-      renderAppContent('lounge');
+      safeRenderLounge(false);
 
       if (!String(id).startsWith('local-') && !String(id).startsWith('temp-')) {
         await supabaseClient
@@ -2421,7 +2431,7 @@
       if (isDemoMode || !currentUser?.id) return;
       loungePosts = loungePosts.filter(p => String(p.id) !== String(id));
       localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-      renderAppContent('lounge');
+      safeRenderLounge(false);
 
       if (liveChannel) {
         liveChannel.send({
