@@ -72,7 +72,7 @@
           🚀
         </div>
         <h1 class="text-2xl font-extrabold tracking-tight text-white">Campus OS</h1>
-        <p class="text-xs text-slate-400">Study, stream YouTube, chat live &amp; chill in one cloud desktop</p>
+        <p class="text-xs text-slate-400">Study, stream YouTube, chat &amp; voice call live in one cloud desktop</p>
       </div>
 
       <div id="auth-alert" class="hidden p-3 rounded-xl border text-xs leading-relaxed"></div>
@@ -282,7 +282,7 @@
             <span class="text-lg">🧠</span><div><p class="text-xs font-semibold text-white">Study Buddy</p><p class="text-[10px] text-slate-400">Cards &amp; Summarizer</p></div>
           </button>
           <button onclick="openApp('lounge'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-lg">💬</span><div><p class="text-xs font-semibold text-white">Messenger</p><p class="text-[10px] text-slate-400">Global &amp; Private DMs</p></div>
+            <span class="text-lg">💬</span><div><p class="text-xs font-semibold text-white">Messenger</p><p class="text-[10px] text-slate-400">Global, DMs &amp; Calls</p></div>
           </button>
           <button onclick="openApp('arcade'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-lg">🕹️</span><div><p class="text-xs font-semibold text-white">Arcade Zone</p><p class="text-[10px] text-slate-400">Snake, 2048 &amp; Typing</p></div>
@@ -311,6 +311,9 @@
       </div>
     </footer>
   </div>
+
+  <!-- Hidden remote audio stream for WebRTC 1-on-1 Voice Calls -->
+  <audio id="remote-call-audio" autoplay playsinline></audio>
 
   <script>
     // ==========================================
@@ -598,6 +601,7 @@
     }
 
     async function signOut() {
+      endVoiceCall(true);
       isDemoMode = false;
       activeDmRecipient = null;
       directMessages = [];
@@ -848,6 +852,36 @@
             if (el2) el2.textContent = '';
           }, 2500);
         })
+        .on('broadcast', { event: 'webrtc_signal' }, async ({ payload }) => {
+          if (!payload || isDemoMode || payload.to_id !== currentUser?.id) return;
+
+          if (payload.kind === 'call_offer') {
+            if (callState !== 'idle') {
+              liveChannel.send({
+                type: 'broadcast',
+                event: 'webrtc_signal',
+                payload: { kind: 'call_end', from_id: currentUser.id, to_id: payload.from_id }
+              });
+              return;
+            }
+            callPeer = { user_id: payload.from_id, name: payload.from_name || 'Student' };
+            pendingOffer = payload.offer;
+            callState = 'incoming';
+            openApp('lounge');
+            safeRenderLounge(false);
+          } else if (payload.kind === 'call_answer' && peerConnection) {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.answer));
+            callState = 'connected';
+            startCallDurationTimer();
+            safeRenderLounge(false);
+          } else if (payload.kind === 'ice_candidate' && peerConnection && payload.candidate) {
+            try {
+              await peerConnection.addIceCandidate(new RTCIceCandidate(payload.candidate));
+            } catch (_) {}
+          } else if (payload.kind === 'call_end') {
+            endVoiceCall(false);
+          }
+        })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_lounge_posts' }, () => {
           fetchLoungePosts(false);
         })
@@ -931,6 +965,172 @@
         prefs: userPrefs,
         updated_at: new Date().toISOString()
       });
+    }
+
+    // ==========================================
+    // WEBRTC 1-ON-1 VOICE CALLS (VIA SUPABASE REALTIME)
+    // ==========================================
+    let peerConnection = null;
+    let localAudioStream = null;
+    let callState = 'idle'; // 'idle' | 'calling' | 'incoming' | 'connected'
+    let callPeer = null;    // { user_id, name }
+    let pendingOffer = null;
+    let isMicMuted = false;
+    let callTimerInterval = null;
+    let callDurationSec = 0;
+
+    const RTC_CONFIG = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    };
+
+    function formatCallTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function createPeerConnection(targetUserId) {
+      const pc = new RTCPeerConnection(RTC_CONFIG);
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate && liveChannel) {
+          liveChannel.send({
+            type: 'broadcast',
+            event: 'webrtc_signal',
+            payload: {
+              kind: 'ice_candidate',
+              from_id: currentUser.id,
+              to_id: targetUserId,
+              candidate: event.candidate
+            }
+          });
+        }
+      };
+
+      pc.ontrack = (event) => {
+        const audioEl = document.getElementById('remote-call-audio');
+        if (audioEl && event.streams[0]) {
+          audioEl.srcObject = event.streams[0];
+        }
+      };
+
+      pc.onconnectionstatechange = () => {
+        if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
+          endVoiceCall(false);
+        }
+      };
+
+      return pc;
+    }
+
+    async function startVoiceCall(targetUserId, targetName) {
+      if (isDemoMode || !currentUser?.id || callState !== 'idle') return;
+      try {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        callPeer = { user_id: targetUserId, name: targetName };
+        callState = 'calling';
+        isMicMuted = false;
+        safeRenderLounge(false);
+
+        peerConnection = createPeerConnection(targetUserId);
+        localAudioStream.getTracks().forEach(track => peerConnection.addTrack(track, localAudioStream));
+
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+
+        liveChannel?.send({
+          type: 'broadcast',
+          event: 'webrtc_signal',
+          payload: {
+            kind: 'call_offer',
+            from_id: currentUser.id,
+            from_name: userPrefs.nickname,
+            to_id: targetUserId,
+            offer
+          }
+        });
+      } catch (err) {
+        alert('Microphone access is required for voice calls: ' + err.message);
+        endVoiceCall(false);
+      }
+    }
+
+    async function acceptIncomingCall() {
+      if (callState !== 'incoming' || !pendingOffer || !callPeer) return;
+      try {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        peerConnection = createPeerConnection(callPeer.user_id);
+        localAudioStream.getTracks().forEach(track => peerConnection.addTrack(track, localAudioStream));
+
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+
+        liveChannel?.send({
+          type: 'broadcast',
+          event: 'webrtc_signal',
+          payload: {
+            kind: 'call_answer',
+            from_id: currentUser.id,
+            to_id: callPeer.user_id,
+            answer
+          }
+        });
+
+        pendingOffer = null;
+        callState = 'connected';
+        startCallDurationTimer();
+        safeRenderLounge(false);
+      } catch (err) {
+        alert('Could not access microphone: ' + err.message);
+        endVoiceCall(true);
+      }
+    }
+
+    function toggleCallMute() {
+      if (!localAudioStream) return;
+      isMicMuted = !isMicMuted;
+      localAudioStream.getAudioTracks().forEach(t => { t.enabled = !isMicMuted; });
+      safeRenderLounge(false);
+    }
+
+    function startCallDurationTimer() {
+      clearInterval(callTimerInterval);
+      callDurationSec = 0;
+      callTimerInterval = setInterval(() => {
+        callDurationSec++;
+        const el = document.getElementById('voice-call-timer');
+        if (el) el.textContent = formatCallTime(callDurationSec);
+      }, 1000);
+    }
+
+    function endVoiceCall(notifyPeer = true) {
+      if (notifyPeer && callPeer && liveChannel && currentUser?.id) {
+        liveChannel.send({
+          type: 'broadcast',
+          event: 'webrtc_signal',
+          payload: {
+            kind: 'call_end',
+            from_id: currentUser.id,
+            to_id: callPeer.user_id
+          }
+        });
+      }
+      clearInterval(callTimerInterval);
+      if (peerConnection) { try { peerConnection.close(); } catch (_) {} peerConnection = null; }
+      if (localAudioStream) { localAudioStream.getTracks().forEach(t => t.stop()); localAudioStream = null; }
+      const audioEl = document.getElementById('remote-call-audio');
+      if (audioEl) audioEl.srcObject = null;
+
+      callState = 'idle';
+      callPeer = null;
+      pendingOffer = null;
+      isMicMuted = false;
+      callDurationSec = 0;
+      safeRenderLounge(false);
     }
 
     // ==========================================
@@ -1741,7 +1941,7 @@
         `;
       }
 
-      // 4. GLOBAL CAMPUS MESSENGER + 1-ON-1 DIRECT MESSAGES
+      // 4. GLOBAL CAMPUS MESSENGER + 1-ON-1 DMs + VOICE CALLS
       if (appId === 'lounge') {
         const isDmMode = Boolean(activeDmRecipient);
 
@@ -1790,7 +1990,7 @@
                 </div>
 
                 ${isDemoMode ? `
-                  <p class="px-2 py-2 text-[11px] text-slate-500 leading-relaxed">Sign in to message online students privately 1-on-1.</p>
+                  <p class="px-2 py-2 text-[11px] text-slate-500 leading-relaxed">Sign in to message &amp; voice call online students 1-on-1.</p>
                 ` : dmContacts.length ? dmContacts.map(peer => {
                   const isActive = activeDmRecipient?.user_id === peer.user_id;
                   const unread = unreadDmCounts[peer.user_id] || 0;
@@ -1810,7 +2010,7 @@
                     </button>
                   `;
                 }).join('') : `
-                  <p class="px-2 py-3 text-[11px] text-slate-500 leading-relaxed">No other signed-in users online right now. When someone joins, click their name to DM!</p>
+                  <p class="px-2 py-3 text-[11px] text-slate-500 leading-relaxed">No other signed-in users online right now. When someone joins, click their name to DM or Call!</p>
                 `}
               </div>
             </aside>
@@ -1829,7 +2029,14 @@
                       <p class="text-[10px] text-indigo-300">🔒 Private 1-on-1 Direct Message</p>
                     </div>
                   </div>
-                  <button onclick="fetchDirectMessages(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Refresh DMs">↻</button>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    ${callState === 'idle' ? `
+                      <button onclick="startVoiceCall('${activeDmRecipient.user_id}', '${escapeHtml(activeDmRecipient.name).replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition" title="Start Voice Call">
+                        <span>📞</span><span>Call</span>
+                      </button>
+                    ` : ''}
+                    <button onclick="fetchDirectMessages(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Refresh DMs">↻</button>
+                  </div>
                 ` : `
                   <div class="flex items-center gap-1.5 overflow-x-auto">
                     ${['All', 'Study', 'Music', 'Chill'].map(ch => `
@@ -1843,6 +2050,38 @@
                   <button onclick="fetchLoungePosts(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer shrink-0" title="Refresh Messages">↻</button>
                 `}
               </div>
+
+              <!-- Active / Incoming Voice Call Banner -->
+              ${callState !== 'idle' && callPeer ? `
+                <div class="mx-4 mt-2.5 px-3.5 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/35 flex items-center justify-between gap-2 shrink-0">
+                  <div class="flex items-center gap-2.5 overflow-hidden">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+                    <div class="overflow-hidden">
+                      <p class="text-xs font-bold text-white truncate">
+                        ${callState === 'incoming' ? `Incoming call from ${escapeHtml(callPeer.name)}` :
+                          callState === 'calling' ? `Calling ${escapeHtml(callPeer.name)}...` :
+                          `In call with ${escapeHtml(callPeer.name)}`}
+                      </p>
+                      <p id="voice-call-timer" class="text-[10px] font-mono-code text-emerald-300">
+                        ${callState === 'connected' ? formatCallTime(callDurationSec) : 'WebRTC Encrypted Audio'}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    ${callState === 'incoming' ? `
+                      <button onclick="acceptIncomingCall()" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold cursor-pointer">Accept</button>
+                    ` : ''}
+                    ${callState === 'connected' ? `
+                      <button onclick="toggleCallMute()" class="px-2.5 py-1 rounded-lg ${isMicMuted ? 'bg-amber-500/30 text-amber-200' : 'bg-white/10 text-white'} text-[11px] font-semibold cursor-pointer">
+                        ${isMicMuted ? '🔇 Unmute' : '🎙️ Mute'}
+                      </button>
+                    ` : ''}
+                    <button onclick="endVoiceCall(true)" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-semibold cursor-pointer">
+                      ${callState === 'incoming' ? 'Decline' : 'End'}
+                    </button>
+                  </div>
+                </div>
+              ` : ''}
 
               ${chatErrorMsg ? `
                 <div class="mx-4 mt-2 p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-[11px] shrink-0">
@@ -1907,7 +2146,7 @@
                   <div class="h-full flex flex-col items-center justify-center text-center text-slate-400 py-10">
                     <span class="text-3xl mb-2">${isDmMode ? '🔒' : '💬'}</span>
                     <p class="text-xs font-medium">${isDmMode ? `Start a private conversation with ${escapeHtml(activeDmRecipient.name)}` : `No messages in #${activeChatChannel} yet`}</p>
-                    <p class="text-[11px] text-slate-500 mt-0.5">${isDmMode ? 'Only you and this user can see messages sent here.' : 'Say hello below!'}</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">${isDmMode ? 'Only you and this user can see messages or join calls here.' : 'Say hello below!'}</p>
                   </div>
                 `}
               </div>
@@ -1919,7 +2158,7 @@
               <div class="p-3 bg-slate-900/95 border-t border-white/10 shrink-0">
                 ${isDemoMode ? `
                   <div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs">
-                    <span class="text-amber-200">🔒 Guests are read-only. Sign in to chat &amp; DM.</span>
+                    <span class="text-amber-200">🔒 Guests are read-only. Sign in to chat, DM &amp; call.</span>
                     <button onclick="signOut()" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold cursor-pointer shrink-0 ml-2">Sign In</button>
                   </div>
                 ` : `
