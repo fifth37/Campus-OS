@@ -93,15 +93,14 @@
           🚀
         </div>
         <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-[11px] font-medium mb-2">
-          <span>Campus OS v3.0</span>
+          <span>Campus OS v4.0</span>
           <span>•</span>
-          <span>Live Cloud &amp; Multiplayer</span>
+          <span>Live Chat, Cloud &amp; Study Suite</span>
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-white">Welcome to Campus OS</h1>
         <p class="text-xs text-slate-400 mt-1">Your assistive study workspace, arcade &amp; live hangout hub</p>
       </div>
 
-      <!-- Google OAuth Button -->
       <button id="google-login-btn" onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-semibold py-2.5 px-4 rounded-xl transition duration-150 shadow-md cursor-pointer text-sm">
         <svg class="w-4 h-4" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -153,7 +152,7 @@
        ========================================== -->
   <div id="desktop-view" class="hidden h-screen w-screen flex flex-col wallpaper-nebula relative overflow-hidden">
 
-    <!-- TOP SYSTEM BAR WITH PERSISTENT YOUTUBE MINI-PLAYER -->
+    <!-- TOP SYSTEM BAR -->
     <header class="h-9 px-4 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between text-xs z-50 shrink-0 gap-2">
       <div class="flex items-center gap-3 shrink-0">
         <button onclick="toggleStartMenu()" class="flex items-center gap-2 font-bold text-white hover:text-indigo-400 transition cursor-pointer">
@@ -161,8 +160,10 @@
           <span>Campus OS</span>
         </button>
         <span class="text-slate-600 hidden sm:inline">|</span>
-        <span id="top-active-app" class="font-medium text-slate-300 hidden sm:inline">Desktop</span>
-        <span id="cloud-sync-badge" class="px-2 py-0.5 text-[10px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 rounded-full">☁️ Cloud Ready</span>
+        <button onclick="toggleSpotlight(true)" class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 text-[11px] cursor-pointer transition">
+          <span>🔍 Quick Jump</span>
+          <span class="text-[9px] text-slate-500 font-mono-code hidden md:inline">Ctrl+K</span>
+        </button>
       </div>
 
       <!-- Persistent YouTube Mini-Player Pill -->
@@ -174,6 +175,7 @@
       </div>
 
       <div class="flex items-center gap-3 text-slate-300 shrink-0">
+        <span id="cloud-sync-badge" class="hidden sm:inline px-2 py-0.5 text-[10px] font-medium bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 rounded-full">☁️ Live</span>
         <span id="os-clock" class="font-mono-code text-[11px] text-slate-200">12:00 PM</span>
         <button onclick="signOut()" class="px-2.5 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] font-medium transition cursor-pointer">
           Sign Out
@@ -185,52 +187,60 @@
     <main id="desktop-canvas" class="flex-1 relative overflow-hidden p-4 sm:p-6">
 
       <!-- Desktop Shortcut Icons Grid -->
-      <div class="grid grid-flow-col grid-rows-4 gap-3 w-fit z-10 relative">
-        <button onclick="openApp('youtube')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">▶️</div>
+      <div class="grid grid-flow-col grid-rows-5 gap-2.5 w-fit z-10 relative">
+        <button onclick="openApp('youtube')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">▶️</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">YouTube Music</span>
         </button>
 
-        <button onclick="openApp('focus')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🎧</div>
+        <button onclick="openApp('focus')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🎧</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Focus Timer</span>
         </button>
 
-        <button onclick="openApp('tasks')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">✅</div>
+        <button onclick="openApp('tasks')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">✅</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Tasks &amp; Goals</span>
         </button>
 
-        <button onclick="openApp('notes')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">📝</div>
+        <button onclick="openApp('notes')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">📝</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Scratchpad</span>
         </button>
 
-        <button onclick="openApp('arcade')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🕹️</div>
+        <button onclick="openApp('study')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧠</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Study Buddy</span>
+        </button>
+
+        <button onclick="openApp('lounge')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">💬</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Global Chat</span>
+        </button>
+
+        <button onclick="openApp('arcade')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🕹️</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Arcade Zone</span>
         </button>
 
-        <button onclick="openApp('lounge')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">💬</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Campus Lounge</span>
+        <button onclick="openApp('habits')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🔥</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Habit Streaks</span>
         </button>
 
-        <button onclick="openApp('study')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🧠</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Study Buddy</span>
+        <button onclick="openApp('calc')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🧮</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Sci Calculator</span>
         </button>
       </div>
 
-      <!-- Right-Side Live Community & Profile Widget -->
+      <!-- Right-Side Live Community, Deadlines & Profile Widget -->
       <div class="hidden lg:block absolute top-6 right-6 w-72 os-glass rounded-2xl p-4 z-10 space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3 overflow-hidden">
-            <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-lg font-bold text-indigo-300" id="widget-avatar">S</div>
-            <div class="overflow-hidden">
-              <p id="widget-name" class="text-sm font-bold text-white truncate">Student</p>
-              <p id="widget-status" class="text-[11px] text-slate-400 truncate">✨ Ready to focus &amp; chill</p>
-            </div>
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-lg font-bold text-indigo-300" id="widget-avatar">S</div>
+          <div class="overflow-hidden">
+            <p id="widget-name" class="text-sm font-bold text-white truncate">Student</p>
+            <p id="widget-status" class="text-[11px] text-slate-400 truncate">✨ Ready to focus &amp; chill</p>
           </div>
         </div>
 
@@ -239,23 +249,47 @@
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span id="online-users-count">1 online now</span>
           </span>
-          <button onclick="openApp('lounge')" class="text-emerald-200 hover:underline cursor-pointer">Join Lounge →</button>
+          <button onclick="openApp('lounge')" class="text-emerald-200 hover:underline cursor-pointer">Open Chat →</button>
         </div>
 
-        <div class="grid grid-cols-2 gap-2 pt-1 text-center">
+        <div class="grid grid-cols-3 gap-2 text-center">
           <div onclick="openApp('tasks')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
-            <p class="text-[10px] text-slate-400 uppercase">Open Tasks</p>
-            <p id="widget-tasks-count" class="text-base font-bold text-emerald-400">2</p>
+            <p class="text-[9px] text-slate-400 uppercase">Tasks</p>
+            <p id="widget-tasks-count" class="text-sm font-bold text-emerald-400">2</p>
+          </div>
+          <div onclick="openApp('habits')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
+            <p class="text-[9px] text-slate-400 uppercase">Habits</p>
+            <p id="widget-habits-count" class="text-sm font-bold text-orange-400">1/3</p>
           </div>
           <div onclick="openApp('arcade')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
-            <p class="text-[10px] text-slate-400 uppercase">Top Snake</p>
-            <p id="widget-top-snake" class="text-base font-bold text-rose-400">0</p>
+            <p class="text-[9px] text-slate-400 uppercase">Top Snake</p>
+            <p id="widget-top-snake" class="text-sm font-bold text-rose-400">0</p>
+          </div>
+        </div>
+
+        <!-- Exam / Milestone Countdown Box -->
+        <div class="pt-2 border-t border-white/10">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Countdown</span>
+            <button onclick="editDeadlineCountdown()" class="text-[10px] text-indigo-400 hover:underline cursor-pointer">Edit</button>
+          </div>
+          <div class="px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 flex items-center justify-between">
+            <span id="countdown-title" class="text-xs font-medium text-slate-200 truncate">End of Semester</span>
+            <span id="countdown-days" class="font-mono-code text-xs font-bold text-indigo-400 shrink-0 ml-2">14d left</span>
           </div>
         </div>
       </div>
 
       <!-- FLOATING APP WINDOWS LAYER -->
       <div id="windows-layer" class="absolute inset-0 pointer-events-none"></div>
+
+      <!-- SPOTLIGHT COMMAND PALETTE (Ctrl+K) -->
+      <div id="spotlight-modal" onclick="if(event.target===this) toggleSpotlight(false)" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4">
+        <div class="os-glass w-full max-w-lg rounded-2xl p-4 shadow-2xl border border-indigo-400/30 space-y-3">
+          <input id="spotlight-input" type="text" oninput="renderSpotlightResults(this.value)" placeholder="Type an app name, search notes, or run a command..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950/90 border border-slate-700 text-sm text-white focus:outline-none focus:border-indigo-500" />
+          <div id="spotlight-results" class="max-h-64 overflow-y-auto custom-scrollbar space-y-1"></div>
+        </div>
+      </div>
 
       <!-- START LAUNCHER POPUP -->
       <div id="start-menu" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 w-[92vw] max-w-md os-glass rounded-2xl p-5 shadow-2xl z-50 border border-white/15">
@@ -270,62 +304,46 @@
         </div>
 
         <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">All Applications</p>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="openApp('youtube'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">▶️</span>
-            <div>
-              <p class="text-xs font-semibold text-white">YouTube Music</p>
-              <p class="text-[10px] text-slate-400">Search &amp; Stream</p>
-            </div>
+        <div class="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto custom-scrollbar">
+          <button onclick="openApp('youtube'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">▶️</span>
+            <div><p class="text-xs font-semibold text-white">YouTube Music</p><p class="text-[10px] text-slate-400">Search &amp; Stream</p></div>
           </button>
-          <button onclick="openApp('focus'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">🎧</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Focus Timer</p>
-              <p class="text-[10px] text-slate-400">Pomodoro &amp; Rain Audio</p>
-            </div>
+          <button onclick="openApp('focus'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🎧</span>
+            <div><p class="text-xs font-semibold text-white">Focus Timer</p><p class="text-[10px] text-slate-400">Pomodoro &amp; Rain</p></div>
           </button>
-          <button onclick="openApp('tasks'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">✅</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Tasks &amp; Goals</p>
-              <p class="text-[10px] text-slate-400">Cloud-Synced Planner</p>
-            </div>
+          <button onclick="openApp('tasks'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">✅</span>
+            <div><p class="text-xs font-semibold text-white">Tasks &amp; Goals</p><p class="text-[10px] text-slate-400">Cloud Planner</p></div>
           </button>
-          <button onclick="openApp('notes'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">📝</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Scratchpad</p>
-              <p class="text-[10px] text-slate-400">Cloud Notes</p>
-            </div>
+          <button onclick="openApp('notes'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">📝</span>
+            <div><p class="text-xs font-semibold text-white">Scratchpad</p><p class="text-[10px] text-slate-400">Cloud Notes</p></div>
           </button>
-          <button onclick="openApp('arcade'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">🕹️</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Arcade Zone</p>
-              <p class="text-[10px] text-slate-400">Snake, 2048 &amp; Typing</p>
-            </div>
+          <button onclick="openApp('study'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🧠</span>
+            <div><p class="text-xs font-semibold text-white">Study Buddy</p><p class="text-[10px] text-slate-400">Cards &amp; Summarizer</p></div>
           </button>
-          <button onclick="openApp('lounge'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">💬</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Campus Lounge</p>
-              <p class="text-[10px] text-slate-400">Live Global Chat</p>
-            </div>
+          <button onclick="openApp('lounge'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">💬</span>
+            <div><p class="text-xs font-semibold text-white">Global Chat</p><p class="text-[10px] text-slate-400">Live Campus Lounge</p></div>
           </button>
-          <button onclick="openApp('study'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">🧠</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Study Buddy</p>
-              <p class="text-[10px] text-slate-400">Note Summarizer &amp; Cards</p>
-            </div>
+          <button onclick="openApp('arcade'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🕹️</span>
+            <div><p class="text-xs font-semibold text-white">Arcade Zone</p><p class="text-[10px] text-slate-400">Snake, 2048 &amp; Typing</p></div>
           </button>
-          <button onclick="openApp('settings'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">🎨</span>
-            <div>
-              <p class="text-xs font-semibold text-white">Personalize</p>
-              <p class="text-[10px] text-slate-400">Themes &amp; Profile</p>
-            </div>
+          <button onclick="openApp('habits'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🔥</span>
+            <div><p class="text-xs font-semibold text-white">Habit Streaks</p><p class="text-[10px] text-slate-400">Daily Consistency</p></div>
+          </button>
+          <button onclick="openApp('calc'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🧮</span>
+            <div><p class="text-xs font-semibold text-white">Sci Calculator</p><p class="text-[10px] text-slate-400">Math &amp; Grade Calc</p></div>
+          </button>
+          <button onclick="openApp('settings'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-lg">🎨</span>
+            <div><p class="text-xs font-semibold text-white">Personalize</p><p class="text-[10px] text-slate-400">Themes &amp; Profile</p></div>
           </button>
         </div>
       </div>
@@ -345,7 +363,7 @@
 
   <script>
     // ==========================================
-    // DYNAMIC PWA MANIFEST INJECTION
+    // DYNAMIC PWA MANIFEST
     // ==========================================
     (function setupPwaManifest() {
       const manifest = {
@@ -355,13 +373,11 @@
         display: 'standalone',
         background_color: '#070b14',
         theme_color: '#4f46e5',
-        icons: [
-          {
-            src: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%234f46e5%22/><text y=%22.9em%22 font-size=%2270%22 x=%2215%22>🚀</text></svg>',
-            sizes: '192x192',
-            type: 'image/svg+xml'
-          }
-        ]
+        icons: [{
+          src: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%234f46e5%22/><text y=%22.9em%22 font-size=%2270%22 x=%2215%22>🚀</text></svg>',
+          sizes: '192x192',
+          type: 'image/svg+xml'
+        }]
       };
       const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
       const link = document.createElement('link');
@@ -374,8 +390,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstallPrompt = e;
-      const btn = document.getElementById('install-pwa-btn');
-      if (btn) btn.classList.remove('hidden');
+      document.getElementById('install-pwa-btn')?.classList.remove('hidden');
     });
 
     async function triggerPwaInstall() {
@@ -400,12 +415,18 @@
     let isDemoMode = false;
     let topZIndex = 20;
     let currentUser = null;
-    let cloudAvailable = false;
+    let liveChannel = null;
+    let chatErrorMsg = '';
+    let activeChatChannel = 'All';
+    let typingUserBanner = '';
+    let typingClearTimeout = null;
 
     let userPrefs = JSON.parse(localStorage.getItem('campus_os_prefs')) || {
       nickname: 'Student',
       status: '✨ Ready to focus & chill',
-      wallpaper: 'wallpaper-nebula'
+      wallpaper: 'wallpaper-nebula',
+      deadlineTitle: 'End of Semester',
+      deadlineDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
     };
 
     let tasks = JSON.parse(localStorage.getItem('campus_os_tasks_v2')) || [
@@ -414,12 +435,18 @@
       { id: 3, title: 'Beat high score in Arcade Snake', tag: 'Chill', done: false }
     ];
 
+    let habits = JSON.parse(localStorage.getItem('campus_os_habits')) || [
+      { id: 1, title: '2 Hours Deep Focus', streak: 4, doneToday: false },
+      { id: 2, title: 'Review Active Recall Cards', streak: 2, doneToday: false },
+      { id: 3, title: 'Drink 2L Water & Stretch', streak: 6, doneToday: true }
+    ];
+
     let notes = JSON.parse(localStorage.getItem('campus_os_notes_v2')) || [
       {
         id: 1,
         title: 'Quick Study Ideas',
         updated: 'Today',
-        content: 'Use active recall + 25 min Pomodoro sprints.\nSearch any study playlist in YouTube Music and minimize the player!'
+        content: 'Use active recall + 25 min Pomodoro sprints.\nPress Ctrl+K anywhere to jump across apps or search notes!'
       }
     ];
     let activeNoteId = notes[0]?.id || 1;
@@ -431,15 +458,20 @@
     ];
     let currentCardIndex = 0;
     let isCardFlipped = false;
-    let studySubTab = 'cards'; // 'cards' | 'summarizer'
+    let studySubTab = 'cards';
     let lastSummaryBullets = [];
 
     let loungePosts = JSON.parse(localStorage.getItem('campus_os_lounge')) || [
       { id: 'local-1', author: 'Alex M.', tag: 'Music', content: 'YouTube mini-player in the top bar while writing notes is clean 🔥', likes: 14, created_at: new Date().toISOString() },
-      { id: 'local-2', author: 'Chloe K.', tag: 'Chill', content: 'Anyone beaten 2048 or hit 70+ WPM in the Arcade yet?', likes: 8, created_at: new Date().toISOString() }
+      { id: 'local-2', author: 'Chloe K.', tag: 'Study', content: 'Who else is doing a 45-min focus sprint right now?', likes: 8, created_at: new Date().toISOString() }
     ];
 
     let leaderboard = [];
+
+    // Calculator State
+    let calcDisplay = '0';
+    let gradeScore = 78;
+    let gradeMax = 100;
 
     // YouTube Player State
     const YT_PRESETS = [
@@ -466,9 +498,11 @@
       focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer',   icon: '🎧', width: 520, height: 440 },
       tasks:    { id: 'tasks',    title: 'Tasks & Goals',         icon: '✅', width: 580, height: 450 },
       notes:    { id: 'notes',    title: 'Scratchpad',            icon: '📝', width: 660, height: 450 },
-      arcade:   { id: 'arcade',   title: 'Arcade Zone',           icon: '🕹️', width: 580, height: 520 },
-      lounge:   { id: 'lounge',   title: 'Campus Lounge (Live)',  icon: '💬', width: 600, height: 480 },
       study:    { id: 'study',    title: 'Study Buddy',           icon: '🧠', width: 640, height: 480 },
+      lounge:   { id: 'lounge',   title: 'Global Campus Chat',    icon: '💬', width: 620, height: 500 },
+      arcade:   { id: 'arcade',   title: 'Arcade Zone',           icon: '🕹️', width: 580, height: 520 },
+      habits:   { id: 'habits',   title: 'Habit Streaks',         icon: '🔥', width: 540, height: 440 },
+      calc:     { id: 'calc',     title: 'Scientific Calculator', icon: '🧮', width: 440, height: 500 },
       settings: { id: 'settings', title: 'Personalize',           icon: '🎨', width: 540, height: 440 }
     };
 
@@ -558,7 +592,7 @@
     function enterDemoMode() {
       isDemoMode = true;
       bootDesktop({
-        id: 'guest-user',
+        id: 'guest-' + Math.floor(Math.random() * 10000),
         email: 'guest@campusos.app',
         user_metadata: { full_name: 'Guest Explorer' }
       }, true);
@@ -575,14 +609,13 @@
 
       syncUserUI(demo);
       renderDock();
-      updateTaskWidget();
+      updateWidgets();
 
       if (Object.keys(openWindows).length === 0) {
-        openApp('youtube');
+        openApp('lounge');
       }
 
-      // Initialize Cloud Sync & Realtime Multiplayer
-      await initCloudSync(demo);
+      await initLiveRealtimeAndCloud(demo);
     }
 
     function syncUserUI(demo = isDemoMode) {
@@ -596,8 +629,8 @@
 
       const badge = document.getElementById('cloud-sync-badge');
       if (demo) {
-        badge.textContent = 'Guest Local';
-        badge.className = 'px-2 py-0.5 text-[10px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/25 rounded-full';
+        badge.textContent = 'Guest Live';
+        badge.className = 'hidden sm:inline px-2 py-0.5 text-[10px] font-medium bg-amber-500/15 text-amber-300 border border-amber-500/25 rounded-full';
       }
     }
 
@@ -612,6 +645,7 @@
       stopAmbientSound();
       clearInterval(pomodoroInterval);
       clearInterval(snakeInterval);
+      if (liveChannel) supabaseClient.removeChannel(liveChannel);
       openWindows = {};
       document.getElementById('windows-layer').innerHTML = '';
       await supabaseClient.auth.signOut();
@@ -619,127 +653,205 @@
     }
 
     // ==========================================
-    // SUPABASE CLOUD SYNC & REALTIME MULTIPLAYER
+    // GLOBAL CHAT + REALTIME + CLOUD SYNC
     // ==========================================
-    async function initCloudSync(demo) {
-      try {
-        // 1. Fetch Lounge Posts
-        const { data: postsData, error: postsErr } = await supabaseClient
-          .from('campus_lounge_posts')
+    async function fetchLoungePosts() {
+      const { data, error } = await supabaseClient
+        .from('campus_lounge_posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(40);
+
+      if (error) {
+        chatErrorMsg = `Database note: ${error.message}`;
+        return;
+      }
+
+      chatErrorMsg = '';
+      if (data && data.length > 0) {
+        loungePosts = data;
+        localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
+        if (openWindows['lounge']) renderAppContent('lounge');
+      }
+    }
+
+    async function initLiveRealtimeAndCloud(demo) {
+      await fetchLoungePosts();
+
+      const { data: lbData } = await supabaseClient
+        .from('campus_arcade_scores')
+        .select('*')
+        .order('snake_high', { ascending: false })
+        .limit(10);
+
+      if (lbData) {
+        leaderboard = lbData;
+        if (lbData[0]) document.getElementById('widget-top-snake').textContent = lbData[0].snake_high;
+        if (openWindows['arcade']) renderAppContent('arcade');
+      }
+
+      if (!demo && currentUser?.id) {
+        const { data: userData } = await supabaseClient
+          .from('campus_user_data')
           .select('*')
-          .order('created_at', { ascending: false })
-          .limit(30);
+          .eq('user_id', currentUser.id)
+          .single();
 
-        if (!postsErr && postsData) {
-          cloudAvailable = true;
-          if (postsData.length > 0) loungePosts = postsData;
-          if (openWindows['lounge']) renderAppContent('lounge');
-        }
-
-        // 2. Fetch Leaderboard
-        const { data: lbData } = await supabaseClient
-          .from('campus_arcade_scores')
-          .select('*')
-          .order('snake_high', { ascending: false })
-          .limit(10);
-
-        if (lbData) {
-          leaderboard = lbData;
-          if (lbData[0]) document.getElementById('widget-top-snake').textContent = lbData[0].snake_high;
-          if (openWindows['arcade']) renderAppContent('arcade');
-        }
-
-        // 3. Load User Cloud Workspace Data (Tasks, Notes, Flashcards, Prefs)
-        if (!demo && currentUser?.id) {
-          const { data: userData } = await supabaseClient
-            .from('campus_user_data')
-            .select('*')
-            .eq('user_id', currentUser.id)
-            .single();
-
-          if (userData) {
-            if (Array.isArray(userData.tasks) && userData.tasks.length) tasks = userData.tasks;
-            if (Array.isArray(userData.notes) && userData.notes.length) {
-              notes = userData.notes;
-              activeNoteId = notes[0].id;
-            }
-            if (Array.isArray(userData.flashcards) && userData.flashcards.length) flashcards = userData.flashcards;
-            if (userData.prefs && userData.prefs.nickname) {
-              userPrefs = { ...userPrefs, ...userData.prefs };
-              applyWallpaper(userPrefs.wallpaper);
-              syncUserUI(false);
-            }
-            updateTaskWidget();
-            ['tasks', 'notes', 'study', 'settings'].forEach(id => {
-              if (openWindows[id]) renderAppContent(id);
-            });
-          } else {
-            await pushWorkspaceToCloud();
+        if (userData) {
+          if (Array.isArray(userData.tasks) && userData.tasks.length) tasks = userData.tasks;
+          if (Array.isArray(userData.habits) && userData.habits.length) habits = userData.habits;
+          if (Array.isArray(userData.notes) && userData.notes.length) {
+            notes = userData.notes;
+            activeNoteId = notes[0].id;
           }
+          if (Array.isArray(userData.flashcards) && userData.flashcards.length) flashcards = userData.flashcards;
+          if (userData.prefs && userData.prefs.nickname) {
+            userPrefs = { ...userPrefs, ...userData.prefs };
+            applyWallpaper(userPrefs.wallpaper);
+            syncUserUI(false);
+          }
+          updateWidgets();
+          ['tasks', 'habits', 'notes', 'study', 'settings'].forEach(id => {
+            if (openWindows[id]) renderAppContent(id);
+          });
+        } else {
+          await pushWorkspaceToCloud();
         }
+      }
 
-        // 4. Subscribe to Live Realtime Updates (Lounge + Presence + Leaderboard)
-        const channel = supabaseClient.channel('campus-os-live', {
-          config: { presence: { key: userPrefs.nickname } }
+      if (liveChannel) supabaseClient.removeChannel(liveChannel);
+
+      liveChannel = supabaseClient.channel('campus-os-global-room', {
+        config: {
+          broadcast: { self: false },
+          presence: { key: `${userPrefs.nickname}-${currentUser?.id || Math.random()}` }
+        }
+      });
+
+      liveChannel
+        .on('broadcast', { event: 'new_chat_msg' }, ({ payload }) => {
+          if (!payload) return;
+          if (!loungePosts.some(p => p.id === payload.id)) {
+            loungePosts.unshift(payload);
+            localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
+            if (openWindows['lounge']) renderAppContent('lounge');
+          }
+        })
+        .on('broadcast', { event: 'user_typing' }, ({ payload }) => {
+          if (!payload || payload.user === userPrefs.nickname) return;
+          typingUserBanner = `${payload.user} is typing...`;
+          const el = document.getElementById('chat-typing-indicator');
+          if (el) el.textContent = typingUserBanner;
+          clearTimeout(typingClearTimeout);
+          typingClearTimeout = setTimeout(() => {
+            typingUserBanner = '';
+            const el2 = document.getElementById('chat-typing-indicator');
+            if (el2) el2.textContent = '';
+          }, 2500);
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_lounge_posts' }, () => {
+          fetchLoungePosts();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_arcade_scores' }, async () => {
+          const { data } = await supabaseClient
+            .from('campus_arcade_scores')
+            .select('*')
+            .order('snake_high', { ascending: false })
+            .limit(10);
+          if (data) {
+            leaderboard = data;
+            if (data[0]) document.getElementById('widget-top-snake').textContent = data[0].snake_high;
+            if (openWindows['arcade']) renderAppContent('arcade');
+          }
+        })
+        .on('presence', { event: 'sync' }, () => {
+          const state = liveChannel.presenceState();
+          const count = Object.keys(state).length || 1;
+          const el = document.getElementById('online-users-count');
+          if (el) el.textContent = `${count} online now`;
+          const chatOnline = document.getElementById('chat-header-online');
+          if (chatOnline) chatOnline.textContent = `${count} active`;
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await liveChannel.track({ user: userPrefs.nickname, online_at: new Date().toISOString() });
+          }
         });
 
-        channel
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_lounge_posts' }, async () => {
-            const { data } = await supabaseClient
-              .from('campus_lounge_posts')
-              .select('*')
-              .order('created_at', { ascending: false })
-              .limit(30);
-            if (data) {
-              loungePosts = data;
-              if (openWindows['lounge']) renderAppContent('lounge');
-            }
-          })
-          .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_arcade_scores' }, async () => {
-            const { data } = await supabaseClient
-              .from('campus_arcade_scores')
-              .select('*')
-              .order('snake_high', { ascending: false })
-              .limit(10);
-            if (data) {
-              leaderboard = data;
-              if (data[0]) document.getElementById('widget-top-snake').textContent = data[0].snake_high;
-              if (openWindows['arcade']) renderAppContent('arcade');
-            }
-          })
-          .on('presence', { event: 'sync' }, () => {
-            const state = channel.presenceState();
-            const count = Object.keys(state).length || 1;
-            const el = document.getElementById('online-users-count');
-            if (el) el.textContent = `${count} online now`;
-          })
-          .subscribe(async (status) => {
-            if (status === 'SUBSCRIBED') {
-              await channel.track({ user: userPrefs.nickname, online_at: new Date().toISOString() });
-            }
-          });
-
-      } catch (err) {
-        console.warn('Running in local mode:', err.message);
-      }
+      setInterval(() => {
+        if (openWindows['lounge'] && !openWindows['lounge'].minimized) {
+          fetchLoungePosts();
+        }
+      }, 5000);
     }
 
     async function pushWorkspaceToCloud() {
       localStorage.setItem('campus_os_tasks_v2', JSON.stringify(tasks));
+      localStorage.setItem('campus_os_habits', JSON.stringify(habits));
       localStorage.setItem('campus_os_notes_v2', JSON.stringify(notes));
       localStorage.setItem('campus_os_cards', JSON.stringify(flashcards));
       localStorage.setItem('campus_os_prefs', JSON.stringify(userPrefs));
 
-      if (isDemoMode || !currentUser?.id || !cloudAvailable) return;
+      if (isDemoMode || !currentUser?.id) return;
 
       await supabaseClient.from('campus_user_data').upsert({
         user_id: currentUser.id,
         tasks,
+        habits,
         notes,
         flashcards,
         prefs: userPrefs,
         updated_at: new Date().toISOString()
       });
+    }
+
+    // ==========================================
+    // SPOTLIGHT COMMAND BAR (Ctrl+K)
+    // ==========================================
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        toggleSpotlight();
+      }
+      if (e.key === 'Escape') {
+        toggleSpotlight(false);
+        toggleStartMenu(false);
+      }
+    });
+
+    function toggleSpotlight(forceState) {
+      const modal = document.getElementById('spotlight-modal');
+      const isHidden = modal.classList.contains('hidden');
+      const show = typeof forceState === 'boolean' ? forceState : isHidden;
+      modal.classList.toggle('hidden', !show);
+      if (show) {
+        const input = document.getElementById('spotlight-input');
+        input.value = '';
+        renderSpotlightResults('');
+        setTimeout(() => input.focus(), 30);
+      }
+    }
+
+    function renderSpotlightResults(query) {
+      const q = query.trim().toLowerCase();
+      const container = document.getElementById('spotlight-results');
+      const appMatches = Object.values(APPS).filter(a => a.title.toLowerCase().includes(q));
+      const noteMatches = notes.filter(n => n.title.toLowerCase().includes(q) || n.content.toLowerCase().includes(q));
+
+      container.innerHTML = `
+        ${appMatches.map(a => `
+          <button onclick="openApp('${a.id}'); toggleSpotlight(false)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-indigo-600/30 text-left transition cursor-pointer">
+            <span class="flex items-center gap-2.5 text-xs font-semibold text-white"><span>${a.icon}</span><span>Open ${a.title}</span></span>
+            <span class="text-[10px] text-slate-400">App</span>
+          </button>
+        `).join('')}
+        ${q && noteMatches.map(n => `
+          <button onclick="selectNote(${n.id}); openApp('notes'); toggleSpotlight(false)" class="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-amber-600/20 text-left transition cursor-pointer">
+            <span class="flex items-center gap-2.5 text-xs text-slate-200"><span>📝</span><span>Note: ${n.title}</span></span>
+            <span class="text-[10px] text-amber-400">Scratchpad</span>
+          </button>
+        `).join('')}
+      `;
     }
 
     // ==========================================
@@ -793,17 +905,18 @@
         if (el) el.classList.remove('hidden');
         focusWindow(appId);
         renderDock();
+        if (appId === 'lounge') fetchLoungePosts();
         return;
       }
 
-      const offset = Object.keys(openWindows).length * 24;
+      const offset = Object.keys(openWindows).length * 22;
       const isMobile = window.innerWidth < 768;
 
       openWindows[appId] = {
         minimized: false,
         maximized: isMobile,
         x: isMobile ? 0 : 135 + offset,
-        y: isMobile ? 0 : 24 + offset
+        y: isMobile ? 0 : 20 + offset
       };
 
       const winEl = document.createElement('div');
@@ -843,6 +956,7 @@
       renderDock();
 
       if (appId === 'youtube') updateYouTubeMiniPill();
+      if (appId === 'lounge') fetchLoungePosts();
     }
 
     function focusWindow(appId) {
@@ -851,7 +965,6 @@
       if (el) {
         el.style.zIndex = ++topZIndex;
         el.classList.add('active-window');
-        document.getElementById('top-active-app').textContent = APPS[appId].title;
       }
     }
 
@@ -860,7 +973,6 @@
       openWindows[appId].minimized = true;
       const el = document.getElementById(`win-${appId}`);
       if (el) el.classList.add('hidden');
-      document.getElementById('top-active-app').textContent = 'Desktop';
       renderDock();
     }
 
@@ -891,7 +1003,6 @@
       delete openWindows[appId];
       const el = document.getElementById(`win-${appId}`);
       if (el) el.remove();
-      document.getElementById('top-active-app').textContent = 'Desktop';
       renderDock();
     }
 
@@ -920,7 +1031,7 @@
     window.addEventListener('mouseup', () => { dragInfo = null; });
 
     // ==========================================
-    // YOUTUBE SEARCH, URL PARSER & MINI-PLAYER
+    // YOUTUBE SEARCH & MINI-PLAYER
     // ==========================================
     let presetIdx = 0;
 
@@ -944,9 +1055,7 @@
       if (!raw) return null;
 
       const listMatch = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-      if (listMatch && !raw.includes('watch?v=')) {
-        return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
-      }
+      if (listMatch && !raw.includes('watch?v=')) return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
 
       const vidMatch = raw.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
                        (raw.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(raw) ? [null, raw] : null);
@@ -1088,9 +1197,7 @@
         gainNode.connect(audioCtx.destination);
         whiteNoise.start(0);
         ambientNode = whiteNoise;
-      } catch (e) {
-        console.warn('Audio init blocked', e);
-      }
+      } catch (e) {}
       renderAppContent('focus');
     }
 
@@ -1100,7 +1207,7 @@
     }
 
     // ==========================================
-    // ARCADE ZONE (SNAKE + 2048 + TYPING RACE + LEADERBOARD)
+    // ARCADE ZONE (SNAKE + 2048 + TYPING RACE + RANKS)
     // ==========================================
     let arcadeTab = 'snake';
     let snakeInterval = null;
@@ -1109,11 +1216,9 @@
     let dir = { x: 1, y: 0 };
     let snakeScore = 0;
 
-    // 2048 State
     let grid2048 = [2,0,0,0, 0,2,0,0, 0,0,0,0, 0,0,0,0];
     let score2048 = 0;
 
-    // Typing Race State
     const TYPING_PROMPTS = [
       'Consistency beats intensity when building deep study habits every single day.',
       'Focus on progress rather than perfection and take breaks when your mind needs air.',
@@ -1153,8 +1258,7 @@
           ctx.textAlign = 'center';
           ctx.fillText(`Game Over! Score: ${snakeScore}`, canvas.width / 2, canvas.height / 2);
 
-          // Submit high score to Supabase Leaderboard
-          if (!isDemoMode && currentUser?.id && cloudAvailable && snakeScore > 0) {
+          if (!isDemoMode && currentUser?.id && snakeScore > 0) {
             const existing = leaderboard.find(r => r.user_id === currentUser.id);
             const best = Math.max(snakeScore, existing?.snake_high || 0);
             await supabaseClient.from('campus_arcade_scores').upsert({
@@ -1224,7 +1328,6 @@
     function move2048(direction) {
       const prev = grid2048.join(',');
       let next = [...grid2048];
-
       for (let i = 0; i < 4; i++) {
         let line = [];
         for (let j = 0; j < 4; j++) {
@@ -1239,7 +1342,6 @@
           next[idx] = line[j];
         }
       }
-
       if (next.join(',') !== prev) {
         grid2048 = next;
         spawn2048Tile();
@@ -1287,18 +1389,12 @@
     }
 
     // ==========================================
-    // STUDY SIDEKICK (NOTE SUMMARIZER + FLASHCARD GEN)
+    // STUDY SIDEKICK (NOTE SUMMARIZER)
     // ==========================================
     function generateStudySummary() {
       const raw = document.getElementById('summarizer-input')?.value.trim();
       if (!raw) return;
-
-      const sentences = raw
-        .replace(/\n+/g, '. ')
-        .split(/[.!?]+/)
-        .map(s => s.trim())
-        .filter(s => s.length > 18);
-
+      const sentences = raw.replace(/\n+/g, '. ').split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 18);
       lastSummaryBullets = sentences.slice(0, 5);
       if (lastSummaryBullets.length === 0) lastSummaryBullets = [raw];
       renderAppContent('study');
@@ -1306,7 +1402,7 @@
 
     async function pushSummaryToFlashcards() {
       if (lastSummaryBullets.length === 0) return;
-      lastSummaryBullets.forEach((bullet, idx) => {
+      lastSummaryBullets.forEach((bullet) => {
         flashcards.push({
           q: `Key Concept #${flashcards.length + 1}: Explain "${bullet.slice(0, 42)}..."`,
           a: bullet
@@ -1317,6 +1413,63 @@
       currentCardIndex = flashcards.length - 1;
       isCardFlipped = false;
       renderAppContent('study');
+    }
+
+    // ==========================================
+    // CALCULATOR & HABIT HELPERS
+    // ==========================================
+    function pressCalc(val) {
+      if (val === 'C') { calcDisplay = '0'; }
+      else if (val === 'DEL') { calcDisplay = calcDisplay.length > 1 ? calcDisplay.slice(0, -1) : '0'; }
+      else if (val === '=') {
+        try {
+          const expr = calcDisplay
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/√\(/g, 'Math.sqrt(')
+            .replace(/\^/g, '**');
+          const res = Function('"use strict";return (' + expr + ')')();
+          calcDisplay = String(Number(res.toFixed(6)));
+        } catch {
+          calcDisplay = 'Error';
+        }
+      } else {
+        if (calcDisplay === '0' || calcDisplay === 'Error') calcDisplay = val;
+        else calcDisplay += val;
+      }
+      renderAppContent('calc');
+    }
+
+    async function toggleHabit(id) {
+      habits = habits.map(h => {
+        if (h.id !== id) return h;
+        const nextDone = !h.doneToday;
+        return { ...h, doneToday: nextDone, streak: nextDone ? h.streak + 1 : Math.max(0, h.streak - 1) };
+      });
+      updateWidgets();
+      renderAppContent('habits');
+      await pushWorkspaceToCloud();
+    }
+
+    async function addHabit(e) {
+      e.preventDefault();
+      const input = document.getElementById('new-habit-input');
+      if (!input.value.trim()) return;
+      habits.push({ id: Date.now(), title: input.value.trim(), streak: 1, doneToday: true });
+      updateWidgets();
+      renderAppContent('habits');
+      await pushWorkspaceToCloud();
+    }
+
+    function editDeadlineCountdown() {
+      const title = prompt('Milestone or Exam Title:', userPrefs.deadlineTitle);
+      if (!title) return;
+      const date = prompt('Target Date (YYYY-MM-DD):', userPrefs.deadlineDate);
+      if (!date) return;
+      userPrefs.deadlineTitle = title.trim();
+      userPrefs.deadlineDate = date.trim();
+      updateWidgets();
+      pushWorkspaceToCloud();
     }
 
     // ==========================================
@@ -1414,7 +1567,7 @@
         `;
       }
 
-      // 2. TASKS & GOALS (CLOUD SYNCED)
+      // 2. TASKS & GOALS
       if (appId === 'tasks') {
         body.innerHTML = `
           <div class="space-y-4">
@@ -1447,7 +1600,7 @@
         `;
       }
 
-      // 3. SCRATCHPAD (CLOUD SYNCED)
+      // 3. SCRATCHPAD
       if (appId === 'notes') {
         const currentNote = notes.find(n => n.id === activeNoteId) || notes[0];
         body.innerHTML = `
@@ -1477,7 +1630,116 @@
         `;
       }
 
-      // 4. ARCADE ZONE (SNAKE + 2048 + TYPING RACE + GLOBAL LEADERBOARD)
+      // 4. GLOBAL CAMPUS CHAT
+      if (appId === 'lounge') {
+        const filteredPosts = activeChatChannel === 'All'
+          ? loungePosts
+          : loungePosts.filter(p => (p.tag || 'Chill').toLowerCase() === activeChatChannel.toLowerCase());
+
+        body.innerHTML = `
+          <div class="flex flex-col h-full space-y-3">
+            <div class="flex items-center justify-between gap-2 pb-2 border-b border-white/10">
+              <div class="flex gap-1.5 overflow-x-auto">
+                ${['All', 'Study', 'Music', 'Chill'].map(ch => `
+                  <button onclick="activeChatChannel='${ch}'; renderAppContent('lounge')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer transition ${
+                    activeChatChannel === ch ? 'bg-sky-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'
+                  }">#${ch}</button>
+                `).join('')}
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span id="chat-header-online" class="text-[10px] text-emerald-400 font-medium">Live</span>
+                <button onclick="fetchLoungePosts()" class="text-[11px] text-slate-400 hover:text-white cursor-pointer" title="Refresh Feed">↻</button>
+              </div>
+            </div>
+
+            ${chatErrorMsg ? `
+              <div class="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-[11px]">
+                ${chatErrorMsg}
+              </div>
+            ` : ''}
+
+            <form onsubmit="addLoungePost(event)" class="flex gap-2">
+              <select id="lounge-tag-select" class="px-2.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-slate-300 focus:outline-none">
+                <option value="Chill">#Chill</option>
+                <option value="Study">#Study</option>
+                <option value="Music">#Music</option>
+              </select>
+              <input id="lounge-input" type="text" required oninput="broadcastTypingStatus()" placeholder="Message everyone online right now..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-sky-500" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold cursor-pointer shrink-0">Send</button>
+            </form>
+
+            <div id="chat-typing-indicator" class="h-3 text-[10px] text-sky-300 italic px-1">${typingUserBanner}</div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+              ${filteredPosts.length ? filteredPosts.map(p => `
+                <div class="p-3 rounded-xl bg-slate-950/60 border border-white/10 space-y-1">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-white">${p.author}</span>
+                      <span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 text-[10px]">#${p.tag || 'Chill'}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500">${new Date(p.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  </div>
+                  <p class="text-xs text-slate-200 leading-relaxed selectable-text">${p.content || p.text}</p>
+                  <button onclick="likeLoungePost('${p.id}', ${p.likes})" class="text-[11px] text-slate-400 hover:text-rose-400 cursor-pointer">❤️ ${p.likes}</button>
+                </div>
+              `).join('') : `<p class="text-xs text-slate-400 text-center py-6">No messages in #${activeChatChannel} yet. Say hello!</p>`}
+            </div>
+          </div>
+        `;
+      }
+
+      // 5. STUDY BUDDY
+      if (appId === 'study') {
+        const card = flashcards[currentCardIndex] || { q: 'No cards yet', a: 'Add one below!' };
+        body.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex gap-2 border-b border-white/10 pb-2.5">
+              <button onclick="studySubTab='cards'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'cards' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">🗂️ Flashcards (${flashcards.length})</button>
+              <button onclick="studySubTab='summarizer'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'summarizer' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">✨ Note Summarizer</button>
+            </div>
+
+            ${studySubTab === 'cards' ? `
+              <div onclick="flipFlashcard()" class="min-h-[150px] p-6 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-indigo-600/20 border border-cyan-400/30 flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-cyan-400/60">
+                <span class="text-[10px] uppercase tracking-widest text-cyan-300 mb-2">${isCardFlipped ? 'Answer' : `Card ${currentCardIndex + 1} of ${flashcards.length} • Click to Flip`}</span>
+                <p class="text-sm font-semibold text-white leading-relaxed">${isCardFlipped ? card.a : card.q}</p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <button onclick="prevFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">← Prev</button>
+                <button onclick="flipFlashcard()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Flip</button>
+                <button onclick="nextFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">Next →</button>
+              </div>
+
+              <form onsubmit="addFlashcard(event)" class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <input id="fc-q" type="text" required placeholder="New question / term..." class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                <div class="flex gap-2">
+                  <input id="fc-a" type="text" required placeholder="Answer / definition..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                  <button type="submit" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+</button>
+                </div>
+              </form>
+            ` : `
+              <div class="space-y-3">
+                <textarea id="summarizer-input" rows="4" placeholder="Paste any long lecture paragraph or article here to extract key revision points..." class="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"></textarea>
+                <div class="flex gap-2">
+                  <button onclick="generateStudySummary()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Extract Key Points</button>
+                  ${lastSummaryBullets.length ? `<button onclick="pushSummaryToFlashcards()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+ Turn into Flashcards</button>` : ''}
+                </div>
+                ${lastSummaryBullets.length ? `
+                  <div class="p-3.5 rounded-xl bg-slate-950/60 border border-cyan-500/30 space-y-1.5">
+                    <p class="text-[11px] font-bold text-cyan-300 uppercase">Key Takeaways:</p>
+                    <ul class="list-disc pl-4 space-y-1 text-xs text-slate-200 selectable-text">
+                      ${lastSummaryBullets.map(b => `<li>${b}</li>`).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      // 6. ARCADE ZONE
       if (appId === 'arcade') {
         body.innerHTML = `
           <div class="space-y-4">
@@ -1541,27 +1803,26 @@
         `;
       }
 
-      // 5. CAMPUS LOUNGE (LIVE MULTIPLAYER)
-      if (appId === 'lounge') {
+      // 7. HABIT STREAKS
+      if (appId === 'habits') {
         body.innerHTML = `
           <div class="space-y-4">
-            <form onsubmit="addLoungePost(event)" class="flex gap-2">
-              <input id="lounge-input" type="text" required placeholder="Post to the live global Campus Lounge..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-sky-500" />
-              <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold cursor-pointer">Send</button>
+            <form onsubmit="addHabit(event)" class="flex gap-2">
+              <input id="new-habit-input" type="text" required placeholder="Add a daily habit (e.g. Read 20 pages)..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-orange-500" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold cursor-pointer">Add</button>
             </form>
 
             <div class="space-y-2.5">
-              ${loungePosts.map(p => `
-                <div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/10 space-y-1.5">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-bold text-white">${p.author}</span>
-                      <span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 text-[10px]">${p.tag || 'Lounge'}</span>
+              ${habits.map(h => `
+                <div onclick="toggleHabit(${h.id})" class="p-3.5 rounded-xl bg-slate-950/55 border border-white/10 hover:border-orange-400/40 flex items-center justify-between cursor-pointer transition">
+                  <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 rounded-lg flex items-center justify-center border text-xs font-bold ${h.doneToday ? 'bg-orange-500/25 border-orange-400 text-orange-300' : 'border-slate-600 text-transparent'}">✓</span>
+                    <div>
+                      <p class="text-xs font-semibold text-white">${h.title}</p>
+                      <p class="text-[10px] text-slate-400">${h.doneToday ? 'Completed today!' : 'Click to check in for today'}</p>
                     </div>
-                    <span class="text-[10px] text-slate-500">${new Date(p.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                   </div>
-                  <p class="text-xs text-slate-200 leading-relaxed selectable-text">${p.content || p.text}</p>
-                  <button onclick="likeLoungePost('${p.id}', ${p.likes})" class="text-[11px] text-slate-400 hover:text-rose-400 cursor-pointer">❤️ ${p.likes}</button>
+                  <span class="px-2.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-300 font-mono-code text-xs font-bold">🔥 ${h.streak}d</span>
                 </div>
               `).join('')}
             </div>
@@ -1569,57 +1830,40 @@
         `;
       }
 
-      // 6. STUDY BUDDY (FLASHCARDS + NOTE SUMMARIZER)
-      if (appId === 'study') {
-        const card = flashcards[currentCardIndex] || { q: 'No cards yet', a: 'Add one below!' };
+      // 8. SCIENTIFIC CALCULATOR & GRADE CONVERTER
+      if (appId === 'calc') {
+        const pct = gradeMax > 0 ? ((gradeScore / gradeMax) * 100).toFixed(1) : '0.0';
+        const letter = pct >= 70 ? 'A (First Class)' : pct >= 60 ? 'B (Upper Second)' : pct >= 50 ? 'C (Lower Second)' : pct >= 40 ? 'D (Pass)' : 'F';
+        const keys = ['7','8','9','÷','4','5','6','×','1','2','3','-','0','.','=','+','(',')','^','√('];
         body.innerHTML = `
           <div class="space-y-4">
-            <div class="flex gap-2 border-b border-white/10 pb-2.5">
-              <button onclick="studySubTab='cards'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'cards' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">🗂️ Flashcards (${flashcards.length})</button>
-              <button onclick="studySubTab='summarizer'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'summarizer' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">✨ Note Summarizer</button>
+            <div class="p-3.5 rounded-xl bg-slate-950 border border-white/15 text-right font-mono-code text-2xl font-bold text-white overflow-x-auto">
+              ${calcDisplay}
+            </div>
+            <div class="grid grid-cols-4 gap-2">
+              <button onclick="pressCalc('C')" class="col-span-2 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-bold cursor-pointer">CLEAR</button>
+              <button onclick="pressCalc('DEL')" class="col-span-2 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-bold cursor-pointer">⌫ DEL</button>
+              ${keys.map(k => `
+                <button onclick="pressCalc('${k}')" class="py-2.5 rounded-xl font-mono-code text-xs font-bold cursor-pointer transition ${
+                  k === '=' ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-slate-950/70 hover:bg-white/15 border border-white/10 text-slate-200'
+                }">${k}</button>
+              `).join('')}
             </div>
 
-            ${studySubTab === 'cards' ? `
-              <div onclick="flipFlashcard()" class="min-h-[150px] p-6 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-indigo-600/20 border border-cyan-400/30 flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-cyan-400/60">
-                <span class="text-[10px] uppercase tracking-widest text-cyan-300 mb-2">${isCardFlipped ? 'Answer' : `Card ${currentCardIndex + 1} of ${flashcards.length} • Click to Flip`}</span>
-                <p class="text-sm font-semibold text-white leading-relaxed">${isCardFlipped ? card.a : card.q}</p>
+            <div class="pt-3 border-t border-white/10 space-y-2">
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Quick Grade / Score Percentage</p>
+              <div class="flex items-center gap-2 text-xs">
+                <input type="number" value="${gradeScore}" oninput="gradeScore=Number(this.value); renderAppContent('calc')" class="w-20 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono-code" />
+                <span class="text-slate-400">out of</span>
+                <input type="number" value="${gradeMax}" oninput="gradeMax=Number(this.value); renderAppContent('calc')" class="w-20 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono-code" />
+                <span class="ml-auto font-mono-code font-bold text-emerald-400">${pct}% • ${letter}</span>
               </div>
-
-              <div class="flex items-center justify-between">
-                <button onclick="prevFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">← Prev</button>
-                <button onclick="flipFlashcard()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Flip</button>
-                <button onclick="nextFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">Next →</button>
-              </div>
-
-              <form onsubmit="addFlashcard(event)" class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <input id="fc-q" type="text" required placeholder="New question / term..." class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
-                <div class="flex gap-2">
-                  <input id="fc-a" type="text" required placeholder="Answer / definition..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
-                  <button type="submit" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+</button>
-                </div>
-              </form>
-            ` : `
-              <div class="space-y-3">
-                <textarea id="summarizer-input" rows="4" placeholder="Paste any long lecture paragraph or article here to extract key revision points..." class="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-cyan-400"></textarea>
-                <div class="flex gap-2">
-                  <button onclick="generateStudySummary()" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Extract Key Points</button>
-                  ${lastSummaryBullets.length ? `<button onclick="pushSummaryToFlashcards()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+ Turn into Flashcards</button>` : ''}
-                </div>
-                ${lastSummaryBullets.length ? `
-                  <div class="p-3.5 rounded-xl bg-slate-950/60 border border-cyan-500/30 space-y-1.5">
-                    <p class="text-[11px] font-bold text-cyan-300 uppercase">Key Takeaways:</p>
-                    <ul class="list-disc pl-4 space-y-1 text-xs text-slate-200 selectable-text">
-                      ${lastSummaryBullets.map(b => `<li>${b}</li>`).join('')}
-                    </ul>
-                  </div>
-                ` : ''}
-              </div>
-            `}
+            </div>
           </div>
         `;
       }
 
-      // 7. PERSONALIZE & SETTINGS
+      // 9. PERSONALIZE & SETTINGS
       if (appId === 'settings') {
         body.innerHTML = `
           <div class="space-y-5">
@@ -1651,7 +1895,7 @@
     }
 
     // ==========================================
-    // HELPER ACTIONS (WITH CLOUD SYNC)
+    // HELPER ACTIONS & LIVE CHAT BROADCASTING
     // ==========================================
     async function addOsTask(e) {
       e.preventDefault();
@@ -1659,27 +1903,34 @@
       const tag = document.getElementById('os-task-tag').value;
       if (!titleInput.value.trim()) return;
       tasks.unshift({ id: Date.now(), title: titleInput.value.trim(), tag, done: false });
-      updateTaskWidget();
+      updateWidgets();
       renderAppContent('tasks');
       await pushWorkspaceToCloud();
     }
 
     async function toggleOsTask(id) {
       tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
-      updateTaskWidget();
+      updateWidgets();
       renderAppContent('tasks');
       await pushWorkspaceToCloud();
     }
 
     async function deleteOsTask(id) {
       tasks = tasks.filter(t => t.id !== id);
-      updateTaskWidget();
+      updateWidgets();
       renderAppContent('tasks');
       await pushWorkspaceToCloud();
     }
 
-    function updateTaskWidget() {
+    function updateWidgets() {
       document.getElementById('widget-tasks-count').textContent = tasks.filter(t => !t.done).length;
+      const doneHabits = habits.filter(h => h.doneToday).length;
+      document.getElementById('widget-habits-count').textContent = `${doneHabits}/${habits.length}`;
+
+      document.getElementById('countdown-title').textContent = userPrefs.deadlineTitle || 'End of Semester';
+      const target = new Date(userPrefs.deadlineDate);
+      const diffDays = Math.max(0, Math.ceil((target - new Date()) / 86400000));
+      document.getElementById('countdown-days').textContent = `${diffDays}d left`;
     }
 
     async function createNewNote() {
@@ -1709,45 +1960,83 @@
       await pushWorkspaceToCloud();
     }
 
+    let lastTypingSent = 0;
+    function broadcastTypingStatus() {
+      if (!liveChannel || Date.now() - lastTypingSent < 1500) return;
+      lastTypingSent = Date.now();
+      liveChannel.send({
+        type: 'broadcast',
+        event: 'user_typing',
+        payload: { user: userPrefs.nickname }
+      });
+    }
+
     async function addLoungePost(e) {
       e.preventDefault();
       const input = document.getElementById('lounge-input');
+      const tagSelect = document.getElementById('lounge-tag-select');
       const text = input.value.trim();
+      const tag = tagSelect ? tagSelect.value : 'Chill';
       if (!text) return;
       input.value = '';
 
-      if (!isDemoMode && currentUser?.id && cloudAvailable) {
-        await supabaseClient.from('campus_lounge_posts').insert({
-          user_id: currentUser.id,
+      const optimisticPost = {
+        id: 'temp-' + Date.now(),
+        user_id: currentUser?.id || null,
+        author: userPrefs.nickname,
+        tag,
+        content: text,
+        likes: 1,
+        created_at: new Date().toISOString()
+      };
+
+      // 1. Immediate local update
+      loungePosts.unshift(optimisticPost);
+      localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
+      renderAppContent('lounge');
+
+      // 2. Immediate WebSocket broadcast to all online users
+      if (liveChannel) {
+        liveChannel.send({
+          type: 'broadcast',
+          event: 'new_chat_msg',
+          payload: optimisticPost
+        });
+      }
+
+      // 3. Persist to Supabase PostgreSQL
+      const { data, error } = await supabaseClient
+        .from('campus_lounge_posts')
+        .insert({
+          user_id: (!isDemoMode && currentUser?.id) ? currentUser.id : null,
           author: userPrefs.nickname,
-          tag: 'Live',
+          tag,
           content: text,
           likes: 1
-        });
-      } else {
-        loungePosts.unshift({
-          id: 'local-' + Date.now(),
-          author: userPrefs.nickname,
-          tag: 'Lounge',
-          content: text,
-          likes: 1,
-          created_at: new Date().toISOString()
-        });
+        })
+        .select()
+        .single();
+
+      if (error) {
+        chatErrorMsg = `Live message sent! (Run the SQL setup in Supabase to save history: ${error.message})`;
+        renderAppContent('lounge');
+      } else if (data) {
+        chatErrorMsg = '';
+        loungePosts = loungePosts.map(p => p.id === optimisticPost.id ? data : p);
         localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
         renderAppContent('lounge');
       }
     }
 
     async function likeLoungePost(id, currentLikes) {
-      if (!String(id).startsWith('local-') && cloudAvailable) {
+      loungePosts = loungePosts.map(p => String(p.id) === String(id) ? { ...p, likes: (p.likes || 0) + 1 } : p);
+      renderAppContent('lounge');
+
+      if (!String(id).startsWith('local-') && !String(id).startsWith('temp-')) {
         await supabaseClient
           .from('campus_lounge_posts')
           .update({ likes: (currentLikes || 0) + 1 })
           .eq('id', id);
-      } else {
-        loungePosts = loungePosts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p);
-        localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-        renderAppContent('lounge');
       }
     }
 
