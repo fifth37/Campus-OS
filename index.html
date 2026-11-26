@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus OS — Desktop Environment</title>
+  <title>Campus OS — Student Hub &amp; Chill Workspace</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -29,22 +29,22 @@
       font-family: 'JetBrains Mono', monospace;
     }
     .os-glass {
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.76);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.11);
     }
     .os-window {
-      background: rgba(15, 23, 42, 0.92);
+      background: rgba(15, 23, 42, 0.93);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(148, 163, 184, 0.22);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.78);
       transition: box-shadow 0.15s ease, border-color 0.15s ease;
     }
     .os-window.active-window {
-      border-color: rgba(59, 130, 246, 0.55);
-      box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(59, 130, 246, 0.25);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.88), 0 0 0 1px rgba(99, 102, 241, 0.3);
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -58,47 +58,44 @@
       border-radius: 3px;
     }
     .wallpaper-nebula {
-      background: radial-gradient(circle at 20% 25%, rgba(37, 99, 235, 0.35), transparent 45%),
-                  radial-gradient(circle at 80% 75%, rgba(99, 102, 241, 0.28), transparent 50%),
-                  linear-gradient(135deg, #050811 0%, #0f172a 55%, #091326 100%);
+      background: radial-gradient(circle at 18% 22%, rgba(99, 102, 241, 0.38), transparent 45%),
+                  radial-gradient(circle at 82% 78%, rgba(14, 165, 233, 0.3), transparent 50%),
+                  linear-gradient(135deg, #060913 0%, #0f172a 55%, #091326 100%);
     }
-    .wallpaper-emerald {
-      background: radial-gradient(circle at 25% 20%, rgba(16, 185, 129, 0.28), transparent 45%),
-                  radial-gradient(circle at 75% 80%, rgba(6, 182, 212, 0.22), transparent 50%),
-                  linear-gradient(135deg, #040d0a 0%, #091c18 55%, #06131a 100%);
+    .wallpaper-sunset {
+      background: radial-gradient(circle at 22% 20%, rgba(244, 63, 94, 0.32), transparent 45%),
+                  radial-gradient(circle at 78% 80%, rgba(245, 158, 11, 0.25), transparent 50%),
+                  linear-gradient(135deg, #0f0714 0%, #1e1024 55%, #110c1d 100%);
     }
-    .wallpaper-crimson {
-      background: radial-gradient(circle at 75% 20%, rgba(225, 29, 72, 0.26), transparent 45%),
-                  radial-gradient(circle at 20% 80%, rgba(124, 58, 237, 0.25), transparent 50%),
-                  linear-gradient(135deg, #0c0610 0%, #190d1e 55%, #0b0f1c 100%);
+    .wallpaper-mint {
+      background: radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.32), transparent 45%),
+                  radial-gradient(circle at 80% 75%, rgba(45, 212, 191, 0.25), transparent 50%),
+                  linear-gradient(135deg, #040d0b 0%, #091e1a 55%, #06141a 100%);
     }
-    .wallpaper-graphite {
-      background: radial-gradient(circle at 50% 0%, rgba(148, 163, 184, 0.14), transparent 55%),
-                  linear-gradient(180deg, #090d16 0%, #111827 100%);
+    .wallpaper-midnight {
+      background: radial-gradient(circle at 50% 0%, rgba(148, 163, 184, 0.16), transparent 55%),
+                  linear-gradient(180deg, #080b12 0%, #111827 100%);
     }
   </style>
 </head>
-<body class="antialiased selection:bg-blue-500 selection:text-white">
+<body class="antialiased selection:bg-indigo-500 selection:text-white">
 
   <!-- ==========================================
-       1. LOCK / LOGIN SCREEN VIEW
+       1. LOGIN / BOOT SCREEN
        ========================================== -->
   <div id="auth-view" class="h-screen w-screen flex items-center justify-center p-4 wallpaper-nebula overflow-y-auto">
     <div class="os-glass w-full max-w-md rounded-2xl p-8 shadow-2xl">
       <div class="flex flex-col items-center text-center mb-7">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-600/30 mb-4 border border-white/15">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-          </svg>
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 flex items-center justify-center shadow-lg shadow-indigo-600/30 mb-4 border border-white/15 text-2xl">
+          🚀
         </div>
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-400/25 text-blue-300 text-[11px] font-medium mb-2">
-          <span>Campus OS v2.6</span>
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-[11px] font-medium mb-2">
+          <span>Campus OS</span>
           <span>•</span>
-          <span>Desktop Environment</span>
+          <span>Study, Focus &amp; Chill</span>
         </div>
-        <h1 class="text-2xl font-bold tracking-tight text-white">Sign In to Campus OS</h1>
-        <p class="text-xs text-slate-400 mt-1">Boot into your unified academic workspace</p>
+        <h1 class="text-2xl font-bold tracking-tight text-white">Welcome to Campus OS</h1>
+        <p class="text-xs text-slate-400 mt-1">Your all-in-one assistive workspace &amp; hangout desktop</p>
       </div>
 
       <!-- Google OAuth Button -->
@@ -117,7 +114,7 @@
           <div class="w-full border-t border-slate-700/80"></div>
         </div>
         <div class="relative flex justify-center text-[11px] uppercase">
-          <span class="bg-slate-900 px-3 text-slate-400 tracking-wider">Or University Email</span>
+          <span class="bg-slate-900 px-3 text-slate-400 tracking-wider">Or Email Login</span>
         </div>
       </div>
 
@@ -128,23 +125,23 @@
       <form id="email-auth-form" onsubmit="handleEmailAuth(event)" class="space-y-3.5">
         <div>
           <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Email Address</label>
-          <input id="email-input" type="email" required placeholder="student@university.ac.ke" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500 transition" />
+          <input id="email-input" type="email" required placeholder="you@example.com" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition" />
         </div>
         <div>
           <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Password</label>
-          <input id="password-input" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-blue-500 transition" />
+          <input id="password-input" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition" />
         </div>
-        <button id="submit-auth-btn" type="submit" class="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition shadow-lg shadow-blue-600/20 cursor-pointer">
+        <button id="submit-auth-btn" type="submit" class="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition shadow-lg shadow-indigo-600/20 cursor-pointer">
           Boot into Desktop
         </button>
       </form>
 
       <div class="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
-        <button id="toggle-auth-mode" onclick="toggleAuthMode()" class="text-blue-400 hover:text-blue-300 font-medium cursor-pointer">
+        <button id="toggle-auth-mode" onclick="toggleAuthMode()" class="text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer">
           Create an Account
         </button>
         <button onclick="enterDemoMode()" class="text-slate-400 hover:text-white font-medium cursor-pointer">
-          Guest Boot →
+          Guest Mode →
         </button>
       </div>
     </div>
@@ -155,27 +152,27 @@
        ========================================== -->
   <div id="desktop-view" class="hidden h-screen w-screen flex flex-col wallpaper-nebula relative overflow-hidden">
 
-    <!-- TOP SYSTEM STATUS BAR -->
+    <!-- TOP SYSTEM BAR -->
     <header class="h-9 px-4 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between text-xs z-50 shrink-0">
       <div class="flex items-center gap-4">
-        <button onclick="toggleStartMenu()" class="flex items-center gap-2 font-bold text-white hover:text-blue-400 transition cursor-pointer">
-          <span class="w-5 h-5 rounded bg-blue-600 flex items-center justify-center text-[11px]">🎓</span>
+        <button onclick="toggleStartMenu()" class="flex items-center gap-2 font-bold text-white hover:text-indigo-400 transition cursor-pointer">
+          <span class="w-5 h-5 rounded bg-indigo-600 flex items-center justify-center text-[11px]">🚀</span>
           <span>Campus OS</span>
         </button>
         <span class="text-slate-600">|</span>
         <span id="top-active-app" class="font-medium text-slate-300">Desktop</span>
-        <span id="demo-badge" class="hidden px-2 py-0.5 text-[10px] font-semibold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">Guest Session</span>
+        <span id="demo-badge" class="hidden px-2 py-0.5 text-[10px] font-semibold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full">Guest</span>
       </div>
 
       <div class="flex items-center gap-4 text-slate-300">
-        <div class="hidden sm:flex items-center gap-2 text-[11px] text-emerald-400">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Portal Online</span>
-        </div>
+        <button id="top-sound-indicator" onclick="openApp('focus')" class="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white cursor-pointer">
+          <span>🎧</span>
+          <span id="sound-status-text">Lo-Fi Off</span>
+        </button>
         <span id="os-clock" class="font-mono-code text-[11px] text-slate-200">12:00 PM</span>
-        <button onclick="openApp('settings')" class="hover:text-white transition cursor-pointer" title="System Settings">⚙️</button>
+        <button onclick="openApp('settings')" class="hover:text-white transition cursor-pointer" title="Personalize">🎨</button>
         <button onclick="signOut()" class="px-2.5 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] font-medium transition cursor-pointer">
-          Lock / Sign Out
+          Sign Out
         </button>
       </div>
     </header>
@@ -183,140 +180,137 @@
     <!-- MAIN DESKTOP CANVAS -->
     <main id="desktop-canvas" class="flex-1 relative overflow-hidden p-4 sm:p-6">
 
-      <!-- Desktop Shortcut Icons Grid -->
+      <!-- Desktop Shortcut Icons Grid (All 7 Apps) -->
       <div class="grid grid-flow-col grid-rows-4 sm:grid-rows-5 gap-3 w-fit z-10 relative">
-        <button onclick="openApp('academics')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">📚</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">My Units &amp; GPA</span>
+        <button onclick="openApp('focus')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🎧</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Focus &amp; Lo-Fi</span>
         </button>
 
         <button onclick="openApp('tasks')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">✅</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Tasks &amp; Research</span>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Tasks &amp; Goals</span>
         </button>
 
         <button onclick="openApp('notes')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">📝</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Notes &amp; Study Pad</span>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Scratchpad</span>
         </button>
 
-        <button onclick="openApp('finance')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">💳</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Fee Ledger</span>
+        <button onclick="openApp('arcade')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🕹️</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Arcade Zone</span>
         </button>
 
-        <button onclick="openApp('mail')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition relative">
-            <span>✉️</span>
-            <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-[10px] font-bold flex items-center justify-center">3</span>
-          </div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Campus Mail</span>
+        <button onclick="openApp('lounge')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">💬</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Campus Lounge</span>
         </button>
 
-        <button onclick="openApp('vault')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500 to-indigo-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">📁</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">File Vault</span>
+        <button onclick="openApp('study')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🧠</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Study Buddy</span>
         </button>
 
         <button onclick="openApp('settings')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">⚙️</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Settings</span>
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🎨</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Personalize</span>
         </button>
       </div>
 
-      <!-- Desktop Right-Side System Widget (Quick Student Card) -->
+      <!-- Right-Side Chill Status Widget -->
       <div class="hidden lg:block absolute top-6 right-6 w-72 os-glass rounded-2xl p-4 z-10 space-y-3">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-600/30 border border-blue-400/30 flex items-center justify-center text-lg font-bold text-blue-300" id="widget-avatar">S</div>
+          <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-lg font-bold text-indigo-300" id="widget-avatar">S</div>
           <div class="overflow-hidden">
-            <p id="widget-name" class="text-sm font-bold text-white truncate">Student User</p>
-            <p id="widget-reg" class="text-[11px] text-slate-400 font-mono-code truncate">REG: BB02/SR/3416/23</p>
+            <p id="widget-name" class="text-sm font-bold text-white truncate">Student</p>
+            <p id="widget-status" class="text-[11px] text-slate-400 truncate">✨ Ready to focus &amp; chill</p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/10 text-center">
-          <div class="p-2 rounded-xl bg-slate-950/50">
-            <p class="text-[10px] text-slate-400 uppercase">Pending Tasks</p>
-            <p id="widget-tasks-count" class="text-base font-bold text-amber-400">2</p>
+          <div onclick="openApp('tasks')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
+            <p class="text-[10px] text-slate-400 uppercase">Open Tasks</p>
+            <p id="widget-tasks-count" class="text-base font-bold text-emerald-400">2</p>
           </div>
-          <div class="p-2 rounded-xl bg-slate-950/50">
-            <p class="text-[10px] text-slate-400 uppercase">Fee Balance</p>
-            <p class="text-base font-bold text-emerald-400">KES 0</p>
+          <div onclick="openApp('arcade')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
+            <p class="text-[10px] text-slate-400 uppercase">Snake High</p>
+            <p id="widget-snake-high" class="text-base font-bold text-rose-400">0</p>
           </div>
         </div>
       </div>
 
-      <!-- WINDOW CONTAINER (Floating App Windows render here) -->
+      <!-- FLOATING APP WINDOWS LAYER -->
       <div id="windows-layer" class="absolute inset-0 pointer-events-none"></div>
 
-      <!-- START MENU POPUP -->
+      <!-- START LAUNCHER POPUP -->
       <div id="start-menu" class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 w-[92vw] max-w-md os-glass rounded-2xl p-5 shadow-2xl z-50 border border-white/15">
         <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
           <div>
-            <p id="start-user-name" class="text-sm font-bold text-white">Student User</p>
-            <p id="start-user-email" class="text-[11px] text-slate-400">student@university.ac.ke</p>
+            <p id="start-user-name" class="text-sm font-bold text-white">Student</p>
+            <p id="start-user-email" class="text-[11px] text-slate-400">you@example.com</p>
           </div>
-          <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-semibold">Semester 2026/27</span>
+          <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold">Campus OS</span>
         </div>
 
-        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">All Applications (7)</p>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Apps &amp; Hangouts</p>
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="openApp('academics'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">📚</span>
+          <button onclick="openApp('focus'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-xl">🎧</span>
             <div>
-              <p class="text-xs font-semibold text-white">My Units &amp; GPA</p>
-              <p class="text-[10px] text-slate-400">Courses &amp; Grades</p>
+              <p class="text-xs font-semibold text-white">Focus &amp; Lo-Fi</p>
+              <p class="text-[10px] text-slate-400">Timer &amp; Ambient Audio</p>
             </div>
           </button>
           <button onclick="openApp('tasks'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-xl">✅</span>
             <div>
-              <p class="text-xs font-semibold text-white">Tasks &amp; Research</p>
-              <p class="text-[10px] text-slate-400">Project Milestones</p>
+              <p class="text-xs font-semibold text-white">Tasks &amp; Goals</p>
+              <p class="text-[10px] text-slate-400">Daily Brain Dump</p>
             </div>
           </button>
           <button onclick="openApp('notes'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-xl">📝</span>
             <div>
-              <p class="text-xs font-semibold text-white">Notes &amp; Study Pad</p>
-              <p class="text-[10px] text-slate-400">Lecture Scratchpad</p>
+              <p class="text-xs font-semibold text-white">Scratchpad</p>
+              <p class="text-[10px] text-slate-400">Quick Notes</p>
             </div>
           </button>
-          <button onclick="openApp('finance'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">💳</span>
+          <button onclick="openApp('arcade'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-xl">🕹️</span>
             <div>
-              <p class="text-xs font-semibold text-white">Fee Ledger</p>
-              <p class="text-[10px] text-slate-400">Statements &amp; Receipts</p>
+              <p class="text-xs font-semibold text-white">Arcade Zone</p>
+              <p class="text-[10px] text-slate-400">Snake &amp; Tic-Tac-Toe</p>
             </div>
           </button>
-          <button onclick="openApp('mail'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">✉️</span>
+          <button onclick="openApp('lounge'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-xl">💬</span>
             <div>
-              <p class="text-xs font-semibold text-white">Campus Mail</p>
-              <p class="text-[10px] text-slate-400">Registry &amp; Notices</p>
+              <p class="text-xs font-semibold text-white">Campus Lounge</p>
+              <p class="text-[10px] text-slate-400">Community Hangout</p>
             </div>
           </button>
-          <button onclick="openApp('vault'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">📁</span>
+          <button onclick="openApp('study'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-xl">🧠</span>
             <div>
-              <p class="text-xs font-semibold text-white">File Vault</p>
-              <p class="text-[10px] text-slate-400">Slides &amp; Past Papers</p>
+              <p class="text-xs font-semibold text-white">Study Buddy</p>
+              <p class="text-[10px] text-slate-400">Flashcards &amp; GPA Calc</p>
             </div>
           </button>
           <button onclick="openApp('settings'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-xl">⚙️</span>
+            <span class="text-xl">🎨</span>
             <div>
-              <p class="text-xs font-semibold text-white">System Settings</p>
-              <p class="text-[10px] text-slate-400">Theme &amp; Profile</p>
+              <p class="text-xs font-semibold text-white">Personalize</p>
+              <p class="text-[10px] text-slate-400">Themes &amp; Profile</p>
             </div>
           </button>
         </div>
       </div>
     </main>
 
-    <!-- BOTTOM OS DOCK / TASKBAR -->
+    <!-- BOTTOM OS DOCK -->
     <footer class="h-16 px-4 flex items-center justify-center z-50 shrink-0 pb-2">
       <div class="os-glass px-3 py-2 rounded-2xl flex items-center gap-2 shadow-2xl border border-white/15">
-        <button onclick="toggleStartMenu()" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center font-bold shadow transition cursor-pointer" title="App Launcher">
+        <button onclick="toggleStartMenu()" class="w-10 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center font-bold shadow transition cursor-pointer" title="App Launcher">
           ⊞
         </button>
         <div class="h-6 w-[1px] bg-white/15 mx-1"></div>
@@ -334,104 +328,74 @@
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // ==========================================
-    // OS STATE & PERSISTENT DATA
+    // STATE & LOCAL STORAGE
     // ==========================================
     let isSignUpMode = false;
     let isDemoMode = false;
     let topZIndex = 20;
     let currentUser = null;
 
-    let studentProfile = JSON.parse(localStorage.getItem('campus_os_profile')) || {
-      fullName: 'Edgar Tsama',
-      regNumber: 'BB02/SR/3416/23',
-      program: 'BSc. Human Resource Management (Year 4)',
+    let userPrefs = JSON.parse(localStorage.getItem('campus_os_prefs')) || {
+      nickname: 'Student',
+      status: '✨ Ready to focus & chill',
       wallpaper: 'wallpaper-nebula'
     };
 
-    let tasks = JSON.parse(localStorage.getItem('campus_os_tasks')) || [
-      { id: 1, title: 'Submit Chapter 3 Research Methodology Draft', tag: 'Research Project', done: false },
-      { id: 2, title: 'Revise Employee Motivation & Performance Models', tag: 'HRM 412', done: true },
-      { id: 3, title: 'Prepare Industrial Relations Case Study', tag: 'HRM 415', done: false }
+    let tasks = JSON.parse(localStorage.getItem('campus_os_tasks_v2')) || [
+      { id: 1, title: 'Finish summary notes before tonight', tag: 'Study', done: false },
+      { id: 2, title: '25-min deep focus sprint', tag: 'Focus', done: true },
+      { id: 3, title: 'Beat high score in Arcade Snake', tag: 'Chill', done: false }
     ];
 
-    let notes = JSON.parse(localStorage.getItem('campus_os_notes')) || [
+    let notes = JSON.parse(localStorage.getItem('campus_os_notes_v2')) || [
       {
         id: 1,
-        title: 'Research Project Notes',
-        updated: 'Today, 2:15 PM',
-        content: 'Key focus areas:\n- Intrinsic vs Extrinsic motivation variables\n- Employee recognition frameworks\n- Sample size calculation for questionnaire distribution'
+        title: 'Quick Study Ideas',
+        updated: 'Today',
+        content: 'Use active recall + 25 min Pomodoro sprints.\nTake a 5 minute break in the Arcade after every 2 sessions!'
       },
       {
         id: 2,
-        title: 'Strategic HRM Lecture Summary',
+        title: 'Random Thoughts & Links',
         updated: 'Yesterday',
-        content: '1. Aligning HR strategy with institutional objectives\n2. Talent retention metrics and competency mapping\n3. Performance appraisal bias reduction'
+        content: '- Build out new flashcard deck\n- Try the Rain soundscape while reading'
       }
     ];
     let activeNoteId = notes[0]?.id || 1;
 
-    let units = [
-      { code: 'HRM 411', name: 'Strategic Human Resource Management', attendance: 96, score: 78, credits: 3 },
-      { code: 'HRM 412', name: 'Employee Motivation & Reward Systems', attendance: 92, score: 82, credits: 3 },
-      { code: 'HRM 413', name: 'Organizational Development & Change', attendance: 88, score: 74, credits: 3 },
-      { code: 'HRM 414', name: 'Labor Law & Industrial Relations', attendance: 94, score: 76, credits: 3 },
-      { code: 'HRM 415', name: 'HR Information Systems (HRIS)', attendance: 100, score: 85, credits: 3 },
-      { code: 'HRM 499', name: 'Undergraduate Research Project', attendance: 95, score: 80, credits: 6 }
+    let flashcards = JSON.parse(localStorage.getItem('campus_os_cards')) || [
+      { q: 'What is the Pomodoro Technique?', a: '25 minutes of focused work followed by a 5-minute break to prevent mental fatigue.' },
+      { q: 'What is Active Recall?', a: 'Testing yourself on material from memory rather than passively re-reading notes.' },
+      { q: 'What is Spaced Repetition?', a: 'Reviewing information at increasing intervals over time to lock it into long-term memory.' }
     ];
+    let currentCardIndex = 0;
+    let isCardFlipped = false;
 
-    let mails = [
-      {
-        id: 1,
-        from: 'Academic Registry',
-        subject: 'CAT 2 & Final Exam Card Clearance',
-        time: '10:30 AM',
-        unread: true,
-        body: 'Dear Student,\n\nPlease ensure your unit registration and fee clearance status are confirmed on Campus OS before Friday 5:00 PM to download your official Examination Card.'
-      },
-      {
-        id: 2,
-        from: 'Research Project Coordinator',
-        subject: 'Chapter 1–3 Supervisor Sign-Off Window',
-        time: 'Yesterday',
-        unread: true,
-        body: 'Hello,\n\nAll fourth-year students undertaking their final-year research project should submit bound or digital copies of Chapters 1 to 3 for supervisor review this week.'
-      },
-      {
-        id: 3,
-        from: 'Main Library Services',
-        subject: 'Extended Study Hours During Exam Period',
-        time: 'Nov 24',
-        unread: false,
-        body: 'The main reading halls and digital e-resource labs will remain open until 10:00 PM Monday through Saturday.'
-      }
-    ];
-    let selectedMailId = 1;
-
-    let vaultFiles = [
-      { name: 'HRM_411_Strategic_Notes.pdf', folder: 'Lecture Slides', size: '2.4 MB', date: 'Nov 22, 2026' },
-      { name: 'Research_Proposal_Final_Draft.docx', folder: 'Research Project', size: '1.1 MB', date: 'Nov 25, 2026' },
-      { name: 'Past_Paper_2025_Labor_Law.pdf', folder: 'Past Papers', size: '3.8 MB', date: 'Nov 18, 2026' },
-      { name: 'Semester_Fee_Receipt_2026.pdf', folder: 'Finance & Admin', size: '420 KB', date: 'Sep 14, 2026' }
+    let loungePosts = JSON.parse(localStorage.getItem('campus_os_lounge')) || [
+      { id: 1, author: 'Alex M.', tag: 'Study Tip', text: 'Putting on the rain soundscape in Focus mode + doing 2 sprints got me through an entire chapter 🔥', likes: 12, time: '14m ago' },
+      { id: 2, author: 'Chloe K.', tag: 'Chill', text: 'Anyone managed to pass 15 points on Snake yet? Keep hitting the wall 😂', likes: 8, time: '1h ago' },
+      { id: 3, author: 'Samira', tag: 'Vibes', text: 'Sunset theme + late night study session hits different.', likes: 19, time: '3h ago' }
     ];
 
     const APPS = {
-      academics: { id: 'academics', title: 'My Units & GPA', icon: '📚', width: 680, height: 470 },
-      tasks:     { id: 'tasks',     title: 'Tasks & Research Manager', icon: '✅', width: 620, height: 460 },
-      notes:     { id: 'notes',     title: 'Notes & Study Pad', icon: '📝', width: 680, height: 460 },
-      finance:   { id: 'finance',   title: 'Fee & Finance Ledger', icon: '💳', width: 640, height: 450 },
-      mail:      { id: 'mail',      title: 'Campus Mail & Notices', icon: '✉️', width: 680, height: 450 },
-      vault:     { id: 'vault',     title: 'File Vault', icon: '📁', width: 620, height: 430 },
-      settings:  { id: 'settings',  title: 'System Settings', icon: '⚙️', width: 580, height: 460 }
+      focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer', icon: '🎧', width: 520, height: 440 },
+      tasks:    { id: 'tasks',    title: 'Tasks & Goals',       icon: '✅', width: 580, height: 450 },
+      notes:    { id: 'notes',    title: 'Scratchpad',          icon: '📝', width: 660, height: 450 },
+      arcade:   { id: 'arcade',   title: 'Arcade Zone',         icon: '🕹️', width: 540, height: 490 },
+      lounge:   { id: 'lounge',   title: 'Campus Lounge',       icon: '💬', width: 600, height: 470 },
+      study:    { id: 'study',    title: 'Study Buddy',         icon: '🧠', width: 620, height: 460 },
+      settings: { id: 'settings', title: 'Personalize',         icon: '🎨', width: 540, height: 440 }
     };
 
-    let openWindows = {}; // { appId: { minimized: bool, maximized: bool, x: number, y: number } }
+    let openWindows = {};
 
     // ==========================================
     // AUTHENTICATION LOGIC
     // ==========================================
     window.addEventListener('DOMContentLoaded', async () => {
       startClock();
-      applyWallpaper(studentProfile.wallpaper);
+      applyWallpaper(userPrefs.wallpaper);
+      document.getElementById('widget-snake-high').textContent = localStorage.getItem('campus_os_snake_high') || '0';
 
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session && session.user) {
@@ -518,8 +482,8 @@
     function enterDemoMode() {
       isDemoMode = true;
       bootDesktop({
-        email: 'edgar.tsama@university.ac.ke',
-        user_metadata: { full_name: 'Edgar Tsama' }
+        email: 'guest@campusos.app',
+        user_metadata: { full_name: 'Guest Explorer' }
       }, true);
     }
 
@@ -528,25 +492,25 @@
       document.getElementById('auth-view').classList.add('hidden');
       document.getElementById('desktop-view').classList.remove('hidden');
 
-      const displayName = user?.user_metadata?.full_name || studentProfile.fullName || user?.email?.split('@')[0] || 'Student';
-      studentProfile.fullName = displayName;
+      if (!localStorage.getItem('campus_os_prefs')) {
+        userPrefs.nickname = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Student';
+      }
 
       syncUserUI(demo);
       renderDock();
       updateTaskWidget();
 
-      // Auto-open Academics window on first boot if nothing is open
       if (Object.keys(openWindows).length === 0) {
-        openApp('academics');
+        openApp('focus');
       }
     }
 
     function syncUserUI(demo = isDemoMode) {
-      const name = studentProfile.fullName;
-      const email = currentUser?.email || 'student@university.ac.ke';
+      const name = userPrefs.nickname;
+      const email = currentUser?.email || 'guest@campusos.app';
       document.getElementById('widget-name').textContent = name;
       document.getElementById('widget-avatar').textContent = name.charAt(0).toUpperCase();
-      document.getElementById('widget-reg').textContent = 'REG: ' + studentProfile.regNumber;
+      document.getElementById('widget-status').textContent = userPrefs.status;
       document.getElementById('start-user-name').textContent = name;
       document.getElementById('start-user-email').textContent = email;
 
@@ -563,6 +527,9 @@
 
     async function signOut() {
       isDemoMode = false;
+      stopAmbientSound();
+      clearInterval(pomodoroInterval);
+      clearInterval(snakeInterval);
       openWindows = {};
       document.getElementById('windows-layer').innerHTML = '';
       await supabaseClient.auth.signOut();
@@ -570,7 +537,7 @@
     }
 
     // ==========================================
-    // OS WINDOW MANAGER & DOCK
+    // WINDOW MANAGER & DOCK
     // ==========================================
     function startClock() {
       const update = () => {
@@ -583,11 +550,8 @@
 
     function toggleStartMenu(forceState) {
       const menu = document.getElementById('start-menu');
-      if (typeof forceState === 'boolean') {
-        menu.classList.toggle('hidden', !forceState);
-      } else {
-        menu.classList.toggle('hidden');
-      }
+      if (typeof forceState === 'boolean') menu.classList.toggle('hidden', !forceState);
+      else menu.classList.toggle('hidden');
     }
 
     function renderDock() {
@@ -598,11 +562,8 @@
         const isOpen = Boolean(win);
         const btn = document.createElement('button');
         btn.onclick = () => {
-          if (win && !win.minimized) {
-            focusWindow(app.id);
-          } else {
-            openApp(app.id);
-          }
+          if (win && !win.minimized) focusWindow(app.id);
+          else openApp(app.id);
         };
         btn.title = app.title;
         btn.className = `relative w-10 h-10 rounded-xl flex items-center justify-center text-lg transition cursor-pointer ${
@@ -610,7 +571,7 @@
         }`;
         btn.innerHTML = `
           <span>${app.icon}</span>
-          ${isOpen ? `<span class="absolute -bottom-1 w-1.5 h-1.5 rounded-full ${win.minimized ? 'bg-amber-400' : 'bg-blue-400'}"></span>` : ''}
+          ${isOpen ? `<span class="absolute -bottom-1 w-1.5 h-1.5 rounded-full ${win.minimized ? 'bg-amber-400' : 'bg-indigo-400'}"></span>` : ''}
         `;
         dock.appendChild(btn);
       });
@@ -635,8 +596,8 @@
       openWindows[appId] = {
         minimized: false,
         maximized: isMobile,
-        x: isMobile ? 0 : 130 + offset,
-        y: isMobile ? 0 : 24 + offset
+        x: isMobile ? 0 : 140 + offset,
+        y: isMobile ? 0 : 28 + offset
       };
 
       const winEl = document.createElement('div');
@@ -717,6 +678,7 @@
     }
 
     function closeWindow(appId) {
+      if (appId === 'arcade') clearInterval(snakeInterval);
       delete openWindows[appId];
       const el = document.getElementById(`win-${appId}`);
       if (el) el.remove();
@@ -730,11 +692,7 @@
       const state = openWindows[appId];
       if (!state || state.maximized) return;
       const el = document.getElementById(`win-${appId}`);
-      dragInfo = {
-        appId,
-        startX: e.clientX - el.offsetLeft,
-        startY: e.clientY - el.offsetTop
-      };
+      dragInfo = { appId, startX: e.clientX - el.offsetLeft, startY: e.clientY - el.offsetTop };
       focusWindow(appId);
     }
 
@@ -750,67 +708,265 @@
       openWindows[dragInfo.appId].y = newY;
     });
 
-    window.addEventListener('mouseup', () => {
-      dragInfo = null;
-    });
+    window.addEventListener('mouseup', () => { dragInfo = null; });
 
     // ==========================================
-    // APP CONTENT RENDERERS (ALL 7 MODULES)
+    // 1. FOCUS TIMER & AMBIENT AUDIO ENGINE
+    // ==========================================
+    let pomodoroSeconds = 25 * 60;
+    let pomodoroRunning = false;
+    let pomodoroInterval = null;
+    let audioCtx = null;
+    let ambientNode = null;
+    let activeAmbientType = 'off';
+
+    function formatTimer(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function setPomodoroPreset(mins) {
+      clearInterval(pomodoroInterval);
+      pomodoroRunning = false;
+      pomodoroSeconds = mins * 60;
+      renderAppContent('focus');
+    }
+
+    function togglePomodoro() {
+      if (pomodoroRunning) {
+        clearInterval(pomodoroInterval);
+        pomodoroRunning = false;
+        renderAppContent('focus');
+      } else {
+        pomodoroRunning = true;
+        renderAppContent('focus');
+        pomodoroInterval = setInterval(() => {
+          if (pomodoroSeconds > 0) {
+            pomodoroSeconds--;
+            const disp = document.getElementById('pomo-display');
+            if (disp) disp.textContent = formatTimer(pomodoroSeconds);
+          } else {
+            clearInterval(pomodoroInterval);
+            pomodoroRunning = false;
+            renderAppContent('focus');
+          }
+        }, 1000);
+      }
+    }
+
+    function toggleAmbientSound(type) {
+      stopAmbientSound();
+      if (activeAmbientType === type || type === 'off') {
+        activeAmbientType = 'off';
+        document.getElementById('sound-status-text').textContent = 'Lo-Fi Off';
+        renderAppContent('focus');
+        return;
+      }
+
+      activeAmbientType = type;
+      document.getElementById('sound-status-text').textContent = type === 'rain' ? 'Rain On' : 'Lo-Fi Hum';
+
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = 2 * audioCtx.sampleRate;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= type === 'rain' ? 1.8 : 0.9;
+        }
+
+        const whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        whiteNoise.loop = true;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = type === 'rain' ? 950 : 320;
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.18;
+
+        whiteNoise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        whiteNoise.start(0);
+        ambientNode = whiteNoise;
+      } catch (e) {
+        console.warn('Audio init blocked', e);
+      }
+      renderAppContent('focus');
+    }
+
+    function stopAmbientSound() {
+      if (ambientNode) {
+        try { ambientNode.stop(); } catch (_) {}
+        ambientNode = null;
+      }
+      if (audioCtx) {
+        try { audioCtx.close(); } catch (_) {}
+        audioCtx = null;
+      }
+    }
+
+    // ==========================================
+    // 4. ARCADE ZONE (SNAKE + TIC-TAC-TOE)
+    // ==========================================
+    let arcadeTab = 'snake';
+    let snakeInterval = null;
+    let snake = [{ x: 8, y: 8 }];
+    let food = { x: 12, y: 8 };
+    let dir = { x: 1, y: 0 };
+    let snakeScore = 0;
+
+    let tttBoard = Array(9).fill('');
+    let tttTurn = 'X';
+    let tttWinner = null;
+
+    function switchArcadeTab(tab) {
+      arcadeTab = tab;
+      clearInterval(snakeInterval);
+      renderAppContent('arcade');
+    }
+
+    function startSnakeGame() {
+      clearInterval(snakeInterval);
+      snake = [{ x: 8, y: 8 }];
+      dir = { x: 1, y: 0 };
+      snakeScore = 0;
+      food = { x: Math.floor(Math.random() * 18), y: Math.floor(Math.random() * 14) };
+
+      snakeInterval = setInterval(() => {
+        const canvas = document.getElementById('snake-canvas');
+        if (!canvas) { clearInterval(snakeInterval); return; }
+        const ctx = canvas.getContext('2d');
+
+        const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+        if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
+          clearInterval(snakeInterval);
+          const best = Math.max(snakeScore, Number(localStorage.getItem('campus_os_snake_high') || 0));
+          localStorage.setItem('campus_os_snake_high', best);
+          document.getElementById('widget-snake-high').textContent = best;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#fb7185';
+          ctx.font = 'bold 18px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(`Game Over! Score: ${snakeScore}`, canvas.width / 2, canvas.height / 2);
+          return;
+        }
+
+        snake.unshift(head);
+        if (head.x === food.x && head.y === food.y) {
+          snakeScore++;
+          const scoreEl = document.getElementById('snake-score-label');
+          if (scoreEl) scoreEl.textContent = snakeScore;
+          food = { x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 15) };
+        } else {
+          snake.pop();
+        }
+
+        ctx.fillStyle = '#090e1a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Food
+        ctx.fillStyle = '#f43f5e';
+        ctx.beginPath();
+        ctx.arc(food.x * 20 + 10, food.y * 20 + 10, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Snake
+        snake.forEach((seg, idx) => {
+          ctx.fillStyle = idx === 0 ? '#34d399' : '#10b981';
+          ctx.fillRect(seg.x * 20 + 1, seg.y * 20 + 1, 18, 18);
+        });
+      }, 130);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && openWindows['arcade'] && arcadeTab === 'snake') {
+        e.preventDefault();
+        if (e.key === 'ArrowUp' && dir.y === 0) dir = { x: 0, y: -1 };
+        if (e.key === 'ArrowDown' && dir.y === 0) dir = { x: 0, y: 1 };
+        if (e.key === 'ArrowLeft' && dir.x === 0) dir = { x: -1, y: 0 };
+        if (e.key === 'ArrowRight' && dir.x === 0) dir = { x: 1, y: 0 };
+      }
+    });
+
+    function playTtt(idx) {
+      if (tttBoard[idx] || tttWinner) return;
+      tttBoard[idx] = tttTurn;
+      const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      for (const [a,b,c] of wins) {
+        if (tttBoard[a] && tttBoard[a] === tttBoard[b] && tttBoard[a] === tttBoard[c]) {
+          tttWinner = `${tttBoard[a]} Wins!`;
+        }
+      }
+      if (!tttWinner && !tttBoard.includes('')) tttWinner = 'Draw!';
+      tttTurn = tttTurn === 'X' ? 'O' : 'X';
+      renderAppContent('arcade');
+    }
+
+    function resetTtt() {
+      tttBoard = Array(9).fill('');
+      tttTurn = 'X';
+      tttWinner = null;
+      renderAppContent('arcade');
+    }
+
+    // ==========================================
+    // APP CONTENT RENDERERS (ALL 7 APPS)
     // ==========================================
     function renderAppContent(appId) {
       const body = document.getElementById(`win-body-${appId}`);
       if (!body) return;
 
-      // 1. MY UNITS & GPA
-      if (appId === 'academics') {
-        const avgScore = (units.reduce((acc, u) => acc + u.score, 0) / units.length).toFixed(1);
-        const gpa = ((avgScore / 100) * 4.0).toFixed(2);
+      // 1. FOCUS & LO-FI TIMER
+      if (appId === 'focus') {
         body.innerHTML = `
-          <div class="space-y-4">
-            <div class="grid grid-cols-3 gap-3">
-              <div class="p-3.5 rounded-xl bg-slate-950/60 border border-white/10">
-                <p class="text-[11px] text-slate-400">Registered Units</p>
-                <p class="text-xl font-bold text-white mt-0.5">${units.length} Courses</p>
-              </div>
-              <div class="p-3.5 rounded-xl bg-slate-950/60 border border-white/10">
-                <p class="text-[11px] text-slate-400">Mean Score</p>
-                <p class="text-xl font-bold text-blue-400 mt-0.5">${avgScore}%</p>
-              </div>
-              <div class="p-3.5 rounded-xl bg-slate-950/60 border border-white/10">
-                <p class="text-[11px] text-slate-400">Estimated GPA</p>
-                <p class="text-xl font-bold text-emerald-400 mt-0.5">${gpa} / 4.00</p>
-              </div>
+          <div class="flex flex-col items-center justify-center text-center space-y-5 py-2">
+            <div class="flex gap-2">
+              <button onclick="setPomodoroPreset(25)" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">25m Focus</button>
+              <button onclick="setPomodoroPreset(45)" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">45m Deep Work</button>
+              <button onclick="setPomodoroPreset(5)" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">5m Break</button>
             </div>
 
-            <div class="space-y-2">
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Current Semester Units &amp; Attendance</p>
-              ${units.map(u => `
-                <div class="p-3 rounded-xl bg-slate-950/50 border border-white/5 flex items-center justify-between gap-4">
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <span class="font-mono-code text-xs font-bold text-blue-400">${u.code}</span>
-                      <span class="text-sm font-medium text-white">${u.name}</span>
-                    </div>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Attendance: <span class="text-emerald-400 font-semibold">${u.attendance}%</span> • Current CAT/Score: <span class="text-white font-semibold">${u.score}%</span></p>
-                  </div>
-                  <span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 text-xs font-bold">${u.score >= 70 ? 'A' : 'B'}</span>
-                </div>
-              `).join('')}
+            <div class="w-48 h-48 rounded-full border-4 border-indigo-500/40 bg-slate-950/60 flex flex-col items-center justify-center shadow-inner">
+              <span id="pomo-display" class="font-mono-code text-4xl font-bold text-white tracking-wider">${formatTimer(pomodoroSeconds)}</span>
+              <span class="text-[11px] text-indigo-300 mt-1">${pomodoroRunning ? 'Session Active' : 'Paused'}</span>
+            </div>
+
+            <button onclick="togglePomodoro()" class="px-8 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition cursor-pointer">
+              ${pomodoroRunning ? 'Pause Timer' : 'Start Focus Sprint'}
+            </button>
+
+            <div class="w-full pt-4 border-t border-white/10">
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Ambient Study Soundscape</p>
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="toggleAmbientSound('rain')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${activeAmbientType === 'rain' ? 'bg-sky-500/25 border-sky-400 text-white' : 'bg-slate-950/50 border-white/10 text-slate-300'}">🌧️ Soft Rain</button>
+                <button onclick="toggleAmbientSound('lofi')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${activeAmbientType === 'lofi' ? 'bg-indigo-500/25 border-indigo-400 text-white' : 'bg-slate-950/50 border-white/10 text-slate-300'}">🌊 Deep Hum</button>
+                <button onclick="toggleAmbientSound('off')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${activeAmbientType === 'off' ? 'bg-white/10 border-white/20 text-white' : 'bg-slate-950/50 border-white/10 text-slate-400'}">🔇 Mute</button>
+              </div>
             </div>
           </div>
         `;
       }
 
-      // 2. TASKS & RESEARCH MANAGER
+      // 2. TASKS & GOALS
       if (appId === 'tasks') {
         body.innerHTML = `
           <div class="space-y-4">
             <form onsubmit="addOsTask(event)" class="flex gap-2">
-              <input id="os-task-title" type="text" required placeholder="New assignment or research milestone..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-blue-500" />
+              <input id="os-task-title" type="text" required placeholder="Add a study task, goal, or reminder..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-emerald-500" />
               <select id="os-task-tag" class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-slate-300 focus:outline-none">
-                <option value="Research Project">Research Project</option>
-                <option value="Coursework">Coursework</option>
-                <option value="CAT Revision">CAT Revision</option>
+                <option value="Study">Study</option>
+                <option value="Focus">Focus</option>
+                <option value="Personal">Personal</option>
+                <option value="Chill">Chill</option>
               </select>
               <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold cursor-pointer">Add</button>
             </form>
@@ -822,7 +978,7 @@
                     <span class="w-5 h-5 rounded-full flex items-center justify-center border text-xs ${t.done ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'border-slate-600'}">${t.done ? '✓' : ''}</span>
                     <div>
                       <p class="text-xs font-medium ${t.done ? 'line-through text-slate-500' : 'text-white'}">${t.title}</p>
-                      <span class="text-[10px] text-blue-400">${t.tag}</span>
+                      <span class="text-[10px] text-emerald-400">${t.tag}</span>
                     </div>
                   </div>
                   <button onclick="event.stopPropagation(); deleteOsTask(${t.id})" class="text-[11px] text-slate-500 hover:text-rose-400 px-2 py-1 cursor-pointer">Delete</button>
@@ -833,17 +989,17 @@
         `;
       }
 
-      // 3. NOTES & STUDY PAD
+      // 3. SCRATCHPAD
       if (appId === 'notes') {
         const currentNote = notes.find(n => n.id === activeNoteId) || notes[0];
         body.innerHTML = `
-          <div class="grid grid-cols-3 gap-4 h-full min-h-[340px]">
+          <div class="grid grid-cols-3 gap-4 h-full min-h-[330px]">
             <div class="col-span-1 border-r border-white/10 pr-3 flex flex-col justify-between">
               <div class="space-y-1.5 overflow-y-auto">
                 <button onclick="createNewNote()" class="w-full py-2 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2 cursor-pointer">+ New Note</button>
                 ${notes.map(n => `
                   <div onclick="selectNote(${n.id})" class="p-2.5 rounded-xl cursor-pointer transition ${n.id === currentNote?.id ? 'bg-white/15 border border-white/20' : 'hover:bg-white/5'}">
-                    <p class="text-xs font-semibold text-white truncate">${n.title || 'Untitled Note'}</p>
+                    <p class="text-xs font-semibold text-white truncate">${n.title || 'Untitled'}</p>
                     <p class="text-[10px] text-slate-400 mt-0.5">${n.updated}</p>
                   </div>
                 `).join('')}
@@ -854,8 +1010,8 @@
                 <input type="text" value="${currentNote.title}" oninput="updateNoteField(${currentNote.id}, 'title', this.value)" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 text-sm font-bold text-white focus:outline-none focus:border-amber-400" />
                 <textarea oninput="updateNoteField(${currentNote.id}, 'content', this.value)" class="flex-1 w-full p-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-slate-200 leading-relaxed focus:outline-none focus:border-amber-400 resize-none font-mono-code">${currentNote.content}</textarea>
                 <div class="flex justify-between items-center text-[10px] text-slate-400">
-                  <span>Auto-saved to Campus OS</span>
-                  <button onclick="deleteNote(${currentNote.id})" class="text-rose-400 hover:underline cursor-pointer">Delete Note</button>
+                  <span>Auto-saved locally</span>
+                  <button onclick="deleteNote(${currentNote.id})" class="text-rose-400 hover:underline cursor-pointer">Delete</button>
                 </div>
               ` : ''}
             </div>
@@ -863,95 +1019,62 @@
         `;
       }
 
-      // 4. FEE & FINANCE LEDGER
-      if (appId === 'finance') {
-        body.innerHTML = `
-          <div class="space-y-4">
-            <div class="p-4 rounded-2xl bg-gradient-to-r from-cyan-600/30 to-blue-600/30 border border-cyan-400/30 flex items-center justify-between">
-              <div>
-                <p class="text-xs text-cyan-200">Current Semester Balance</p>
-                <p class="text-2xl font-bold text-white mt-0.5">KES 0.00</p>
-                <p class="text-[11px] text-emerald-300 mt-1">✓ Cleared for Examinations &amp; Portal Services</p>
-              </div>
-              <div class="text-right text-xs text-slate-300">
-                <p>Total Billed: <span class="font-semibold text-white">KES 42,500</span></p>
-                <p>Total Paid: <span class="font-semibold text-emerald-400">KES 42,500</span></p>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Recent Payment Transactions</p>
-              <div class="p-3 rounded-xl bg-slate-950/50 border border-white/10 flex justify-between items-center text-xs">
-                <div>
-                  <p class="font-semibold text-white">Pesaflow / eCitizen Tuition Settlement</p>
-                  <p class="text-[11px] text-slate-400">Ref: PF-9842104 • Sep 14, 2026</p>
-                </div>
-                <span class="font-mono-code font-bold text-emerald-400">+ KES 22,500.00</span>
-              </div>
-              <div class="p-3 rounded-xl bg-slate-950/50 border border-white/10 flex justify-between items-center text-xs">
-                <div>
-                  <p class="font-semibold text-white">University Registration &amp; Activity Fee</p>
-                  <p class="text-[11px] text-slate-400">Ref: PF-9810442 • Sep 02, 2026</p>
-                </div>
-                <span class="font-mono-code font-bold text-emerald-400">+ KES 20,000.00</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 5. CAMPUS MAIL & NOTICES
-      if (appId === 'mail') {
-        const activeMail = mails.find(m => m.id === selectedMailId) || mails[0];
-        body.innerHTML = `
-          <div class="grid grid-cols-5 gap-4 h-full min-h-[330px]">
-            <div class="col-span-2 border-r border-white/10 pr-3 space-y-2 overflow-y-auto">
-              ${mails.map(m => `
-                <div onclick="selectMail(${m.id})" class="p-3 rounded-xl cursor-pointer transition ${m.id === activeMail.id ? 'bg-purple-500/20 border border-purple-400/30' : 'bg-slate-950/40 hover:bg-white/5'}">
-                  <div class="flex justify-between items-center">
-                    <span class="text-[11px] font-bold text-purple-300">${m.from}</span>
-                    <span class="text-[10px] text-slate-400">${m.time}</span>
-                  </div>
-                  <p class="text-xs font-semibold text-white mt-1 truncate">${m.subject}</p>
-                </div>
-              `).join('')}
-            </div>
-            <div class="col-span-3 flex flex-col justify-between bg-slate-950/40 rounded-xl p-4 border border-white/5">
-              <div>
-                <div class="flex justify-between items-start border-b border-white/10 pb-3 mb-3">
-                  <div>
-                    <h4 class="text-sm font-bold text-white">${activeMail.subject}</h4>
-                    <p class="text-xs text-purple-300 mt-0.5">From: ${activeMail.from}</p>
-                  </div>
-                  <span class="text-[11px] text-slate-400">${activeMail.time}</span>
-                </div>
-                <p class="text-xs text-slate-200 whitespace-pre-line leading-relaxed selectable-text">${activeMail.body}</p>
-              </div>
-              <div class="pt-3 border-t border-white/10 text-[11px] text-slate-400">
-                Official Campus OS Institutional Dispatch
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 6. FILE VAULT
-      if (appId === 'vault') {
+      // 4. ARCADE ZONE
+      if (appId === 'arcade') {
         body.innerHTML = `
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <p class="text-xs text-slate-400">Academic Documents, Slides &amp; Past Papers</p>
-              <button onclick="addMockVaultFile()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold cursor-pointer">+ Add Resource Link</button>
+              <div class="flex gap-2">
+                <button onclick="switchArcadeTab('snake')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${arcadeTab === 'snake' ? 'bg-rose-600 text-white' : 'bg-white/10 text-slate-300'}">🐍 Snake</button>
+                <button onclick="switchArcadeTab('ttt')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${arcadeTab === 'ttt' ? 'bg-rose-600 text-white' : 'bg-white/10 text-slate-300'}">❌⭕ Tic-Tac-Toe</button>
+              </div>
+              ${arcadeTab === 'snake' ? `<span class="text-xs font-mono-code text-emerald-400">Score: <strong id="snake-score-label">0</strong></span>` : ''}
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              ${vaultFiles.map(f => `
-                <div class="p-3.5 rounded-xl bg-slate-950/60 border border-white/10 hover:border-sky-400/40 transition flex items-start gap-3">
-                  <div class="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center text-base shrink-0">📄</div>
-                  <div class="overflow-hidden">
-                    <p class="text-xs font-semibold text-white truncate">${f.name}</p>
-                    <p class="text-[10px] text-sky-400 mt-0.5">${f.folder}</p>
-                    <p class="text-[10px] text-slate-500 mt-0.5">${f.size} • ${f.date}</p>
+
+            ${arcadeTab === 'snake' ? `
+              <div class="flex flex-col items-center space-y-3">
+                <canvas id="snake-canvas" width="400" height="300" class="rounded-xl border border-white/15 bg-slate-950"></canvas>
+                <div class="flex items-center gap-3">
+                  <button onclick="startSnakeGame()" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold cursor-pointer">Start / Restart</button>
+                  <span class="text-[11px] text-slate-400">Use Arrow Keys ↑ ↓ ← →</span>
+                </div>
+              </div>
+            ` : `
+              <div class="flex flex-col items-center space-y-4 py-2">
+                <p class="text-sm font-bold text-indigo-300">${tttWinner || `Turn: ${tttTurn}`}</p>
+                <div class="grid grid-cols-3 gap-2">
+                  ${tttBoard.map((cell, i) => `
+                    <button onclick="playTtt(${i})" class="w-20 h-20 rounded-xl bg-slate-950/70 border border-white/15 hover:border-indigo-400 text-2xl font-bold flex items-center justify-center cursor-pointer ${cell === 'X' ? 'text-rose-400' : 'text-sky-400'}">${cell}</button>
+                  `).join('')}
+                </div>
+                <button onclick="resetTtt()" class="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold cursor-pointer">Reset Board</button>
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      // 5. CAMPUS LOUNGE
+      if (appId === 'lounge') {
+        body.innerHTML = `
+          <div class="space-y-4">
+            <form onsubmit="addLoungePost(event)" class="flex gap-2">
+              <input id="lounge-input" type="text" required placeholder="Share a study tip, vibe, or thought with the lounge..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white focus:outline-none focus:border-sky-500" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold cursor-pointer">Post</button>
+            </form>
+
+            <div class="space-y-2.5">
+              ${loungePosts.map(p => `
+                <div class="p-3.5 rounded-xl bg-slate-950/55 border border-white/10 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold text-white">${p.author}</span>
+                      <span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 text-[10px]">${p.tag}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500">${p.time}</span>
                   </div>
+                  <p class="text-xs text-slate-200 leading-relaxed selectable-text">${p.text}</p>
+                  <button onclick="likeLoungePost(${p.id})" class="text-[11px] text-slate-400 hover:text-rose-400 cursor-pointer">❤️ ${p.likes}</button>
                 </div>
               `).join('')}
             </div>
@@ -959,35 +1082,63 @@
         `;
       }
 
-      // 7. SYSTEM SETTINGS
+      // 6. STUDY BUDDY (FLASHCARDS + QUICK GRADE CALC)
+      if (appId === 'study') {
+        const card = flashcards[currentCardIndex] || { q: 'No cards yet', a: 'Add one below!' };
+        body.innerHTML = `
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <p class="text-xs font-semibold uppercase tracking-wider text-cyan-300">Active Recall Flashcards (${currentCardIndex + 1}/${flashcards.length})</p>
+              <span class="text-[11px] text-slate-400">Click card to flip</span>
+            </div>
+
+            <div onclick="flipFlashcard()" class="min-h-[150px] p-6 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-indigo-600/20 border border-cyan-400/30 flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-cyan-400/60">
+              <span class="text-[10px] uppercase tracking-widest text-cyan-300 mb-2">${isCardFlipped ? 'Answer' : 'Question'}</span>
+              <p class="text-sm font-semibold text-white leading-relaxed">${isCardFlipped ? card.a : card.q}</p>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <button onclick="prevFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">← Previous</button>
+              <button onclick="flipFlashcard()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold cursor-pointer">Flip Card</button>
+              <button onclick="nextFlashcard()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">Next →</button>
+            </div>
+
+            <form onsubmit="addFlashcard(event)" class="pt-3 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input id="fc-q" type="text" required placeholder="New question / term..." class="px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+              <div class="flex gap-2">
+                <input id="fc-a" type="text" required placeholder="Answer / definition..." class="flex-1 px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                <button type="submit" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">+</button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+      // 7. PERSONALIZE & SETTINGS
       if (appId === 'settings') {
         body.innerHTML = `
           <div class="space-y-5">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Desktop Wallpaper Theme</p>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <button onclick="setWallpaper('wallpaper-nebula')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${studentProfile.wallpaper === 'wallpaper-nebula' ? 'border-blue-400 bg-blue-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌌 Nebula Blue</button>
-                <button onclick="setWallpaper('wallpaper-emerald')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${studentProfile.wallpaper === 'wallpaper-emerald' ? 'border-emerald-400 bg-emerald-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌲 Emerald</button>
-                <button onclick="setWallpaper('wallpaper-crimson')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${studentProfile.wallpaper === 'wallpaper-crimson' ? 'border-rose-400 bg-rose-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🔮 Crimson Dusk</button>
-                <button onclick="setWallpaper('wallpaper-graphite')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${studentProfile.wallpaper === 'wallpaper-graphite' ? 'border-slate-400 bg-slate-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌑 Graphite</button>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Desktop Atmosphere</p>
+              <div class="grid grid-cols-2 gap-2.5">
+                <button onclick="setWallpaper('wallpaper-nebula')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${userPrefs.wallpaper === 'wallpaper-nebula' ? 'border-indigo-400 bg-indigo-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌌 Nebula Focus</button>
+                <button onclick="setWallpaper('wallpaper-sunset')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${userPrefs.wallpaper === 'wallpaper-sunset' ? 'border-rose-400 bg-rose-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌅 Lo-Fi Sunset</button>
+                <button onclick="setWallpaper('wallpaper-mint')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${userPrefs.wallpaper === 'wallpaper-mint' ? 'border-emerald-400 bg-emerald-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌿 Matcha Chill</button>
+                <button onclick="setWallpaper('wallpaper-midnight')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer ${userPrefs.wallpaper === 'wallpaper-midnight' ? 'border-slate-400 bg-slate-500/20 text-white' : 'border-white/10 bg-slate-950/50 text-slate-300'}">🌑 Midnight OLED</button>
               </div>
             </div>
 
-            <form onsubmit="saveStudentSettings(event)" class="space-y-3 pt-3 border-t border-white/10">
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Student Identity &amp; Profile</p>
+            <form onsubmit="saveUserPrefs(event)" class="space-y-3 pt-3 border-t border-white/10">
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Your Desktop Identity</p>
               <div>
-                <label class="block text-[11px] text-slate-400 mb-1">Full Name</label>
-                <input id="set-fullname" type="text" value="${studentProfile.fullName}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
+                <label class="block text-[11px] text-slate-400 mb-1">Display Nickname</label>
+                <input id="pref-nick" type="text" value="${userPrefs.nickname}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
               </div>
               <div>
-                <label class="block text-[11px] text-slate-400 mb-1">Registration Number</label>
-                <input id="set-reg" type="text" value="${studentProfile.regNumber}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white font-mono-code" />
+                <label class="block text-[11px] text-slate-400 mb-1">Mood / Status Line</label>
+                <input id="pref-status" type="text" value="${userPrefs.status}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
               </div>
-              <div>
-                <label class="block text-[11px] text-slate-400 mb-1">Academic Program</label>
-                <input id="set-program" type="text" value="${studentProfile.program}" class="w-full px-3 py-2 rounded-xl bg-slate-950/70 border border-slate-700 text-xs text-white" />
-              </div>
-              <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold cursor-pointer">Save Profile Changes</button>
+              <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold cursor-pointer">Save Changes</button>
             </form>
           </div>
         `;
@@ -995,7 +1146,7 @@
     }
 
     // ==========================================
-    // APP INTERACTION HELPERS
+    // HELPER ACTIONS
     // ==========================================
     function addOsTask(e) {
       e.preventDefault();
@@ -1003,35 +1154,34 @@
       const tag = document.getElementById('os-task-tag').value;
       if (!titleInput.value.trim()) return;
       tasks.unshift({ id: Date.now(), title: titleInput.value.trim(), tag, done: false });
-      localStorage.setItem('campus_os_tasks', JSON.stringify(tasks));
+      localStorage.setItem('campus_os_tasks_v2', JSON.stringify(tasks));
       updateTaskWidget();
       renderAppContent('tasks');
     }
 
     function toggleOsTask(id) {
       tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
-      localStorage.setItem('campus_os_tasks', JSON.stringify(tasks));
+      localStorage.setItem('campus_os_tasks_v2', JSON.stringify(tasks));
       updateTaskWidget();
       renderAppContent('tasks');
     }
 
     function deleteOsTask(id) {
       tasks = tasks.filter(t => t.id !== id);
-      localStorage.setItem('campus_os_tasks', JSON.stringify(tasks));
+      localStorage.setItem('campus_os_tasks_v2', JSON.stringify(tasks));
       updateTaskWidget();
       renderAppContent('tasks');
     }
 
     function updateTaskWidget() {
-      const pending = tasks.filter(t => !t.done).length;
-      document.getElementById('widget-tasks-count').textContent = pending;
+      document.getElementById('widget-tasks-count').textContent = tasks.filter(t => !t.done).length;
     }
 
     function createNewNote() {
-      const newNote = { id: Date.now(), title: 'New Lecture Note', updated: 'Just now', content: '' };
+      const newNote = { id: Date.now(), title: 'New Scratchpad', updated: 'Just now', content: '' };
       notes.unshift(newNote);
       activeNoteId = newNote.id;
-      localStorage.setItem('campus_os_notes', JSON.stringify(notes));
+      localStorage.setItem('campus_os_notes_v2', JSON.stringify(notes));
       renderAppContent('notes');
     }
 
@@ -1042,32 +1192,71 @@
 
     function updateNoteField(id, field, val) {
       notes = notes.map(n => n.id === id ? { ...n, [field]: val, updated: 'Just now' } : n);
-      localStorage.setItem('campus_os_notes', JSON.stringify(notes));
+      localStorage.setItem('campus_os_notes_v2', JSON.stringify(notes));
     }
 
     function deleteNote(id) {
       notes = notes.filter(n => n.id !== id);
       activeNoteId = notes[0]?.id || null;
-      localStorage.setItem('campus_os_notes', JSON.stringify(notes));
+      localStorage.setItem('campus_os_notes_v2', JSON.stringify(notes));
       renderAppContent('notes');
     }
 
-    function selectMail(id) {
-      selectedMailId = id;
-      renderAppContent('mail');
+    function addLoungePost(e) {
+      e.preventDefault();
+      const input = document.getElementById('lounge-input');
+      if (!input.value.trim()) return;
+      loungePosts.unshift({
+        id: Date.now(),
+        author: userPrefs.nickname,
+        tag: 'Lounge',
+        text: input.value.trim(),
+        likes: 1,
+        time: 'Just now'
+      });
+      localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
+      renderAppContent('lounge');
     }
 
-    function addMockVaultFile() {
-      const name = prompt('Enter document title (e.g., HRM_414_Revision_Guide.pdf):');
-      if (!name) return;
-      vaultFiles.unshift({ name: name.trim(), folder: 'Uploaded Notes', size: '1.5 MB', date: 'Today' });
-      renderAppContent('vault');
+    function likeLoungePost(id) {
+      loungePosts = loungePosts.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p);
+      localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
+      renderAppContent('lounge');
+    }
+
+    function flipFlashcard() {
+      isCardFlipped = !isCardFlipped;
+      renderAppContent('study');
+    }
+
+    function nextFlashcard() {
+      isCardFlipped = false;
+      currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+      renderAppContent('study');
+    }
+
+    function prevFlashcard() {
+      isCardFlipped = false;
+      currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+      renderAppContent('study');
+    }
+
+    function addFlashcard(e) {
+      e.preventDefault();
+      const q = document.getElementById('fc-q').value.trim();
+      const a = document.getElementById('fc-a').value.trim();
+      if (!q || !a) return;
+      flashcards.push({ q, a });
+      currentCardIndex = flashcards.length - 1;
+      isCardFlipped = false;
+      localStorage.setItem('campus_os_cards', JSON.stringify(flashcards));
+      renderAppContent('study');
     }
 
     function applyWallpaper(cls) {
       const desktop = document.getElementById('desktop-view');
       const auth = document.getElementById('auth-view');
-      ['wallpaper-nebula', 'wallpaper-emerald', 'wallpaper-crimson', 'wallpaper-graphite'].forEach(c => {
+      ['wallpaper-nebula', 'wallpaper-sunset', 'wallpaper-mint', 'wallpaper-midnight'].forEach(c => {
         desktop.classList.remove(c);
         auth.classList.remove(c);
       });
@@ -1076,18 +1265,17 @@
     }
 
     function setWallpaper(cls) {
-      studentProfile.wallpaper = cls;
-      localStorage.setItem('campus_os_profile', JSON.stringify(studentProfile));
+      userPrefs.wallpaper = cls;
+      localStorage.setItem('campus_os_prefs', JSON.stringify(userPrefs));
       applyWallpaper(cls);
       renderAppContent('settings');
     }
 
-    function saveStudentSettings(e) {
+    function saveUserPrefs(e) {
       e.preventDefault();
-      studentProfile.fullName = document.getElementById('set-fullname').value.trim() || studentProfile.fullName;
-      studentProfile.regNumber = document.getElementById('set-reg').value.trim() || studentProfile.regNumber;
-      studentProfile.program = document.getElementById('set-program').value.trim() || studentProfile.program;
-      localStorage.setItem('campus_os_profile', JSON.stringify(studentProfile));
+      userPrefs.nickname = document.getElementById('pref-nick').value.trim() || userPrefs.nickname;
+      userPrefs.status = document.getElementById('pref-status').value.trim() || userPrefs.status;
+      localStorage.setItem('campus_os_prefs', JSON.stringify(userPrefs));
       syncUserUI();
       renderAppContent('settings');
     }
