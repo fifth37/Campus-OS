@@ -165,9 +165,13 @@
       </div>
 
       <div class="flex items-center gap-4 text-slate-300">
-        <button id="top-sound-indicator" onclick="openApp('focus')" class="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white cursor-pointer">
+        <button onclick="openApp('youtube')" class="hidden sm:flex items-center gap-1.5 text-[11px] text-rose-300 hover:text-white cursor-pointer" title="Open YouTube Music">
+          <span>▶️</span>
+          <span id="top-yt-status">YouTube Music</span>
+        </button>
+        <button id="top-sound-indicator" onclick="openApp('focus')" class="hidden md:flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white cursor-pointer">
           <span>🎧</span>
-          <span id="sound-status-text">Lo-Fi Off</span>
+          <span id="sound-status-text">Ambient Off</span>
         </button>
         <span id="os-clock" class="font-mono-code text-[11px] text-slate-200">12:00 PM</span>
         <button onclick="openApp('settings')" class="hover:text-white transition cursor-pointer" title="Personalize">🎨</button>
@@ -180,11 +184,16 @@
     <!-- MAIN DESKTOP CANVAS -->
     <main id="desktop-canvas" class="flex-1 relative overflow-hidden p-4 sm:p-6">
 
-      <!-- Desktop Shortcut Icons Grid (All 7 Apps) -->
+      <!-- Desktop Shortcut Icons Grid (All 8 Apps) -->
       <div class="grid grid-flow-col grid-rows-4 sm:grid-rows-5 gap-3 w-fit z-10 relative">
+        <button onclick="openApp('youtube')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">▶️</div>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">YouTube Music</span>
+        </button>
+
         <button onclick="openApp('focus')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🎧</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Focus &amp; Lo-Fi</span>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Focus Timer</span>
         </button>
 
         <button onclick="openApp('tasks')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
@@ -232,9 +241,9 @@
             <p class="text-[10px] text-slate-400 uppercase">Open Tasks</p>
             <p id="widget-tasks-count" class="text-base font-bold text-emerald-400">2</p>
           </div>
-          <div onclick="openApp('arcade')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
-            <p class="text-[10px] text-slate-400 uppercase">Snake High</p>
-            <p id="widget-snake-high" class="text-base font-bold text-rose-400">0</p>
+          <div onclick="openApp('youtube')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
+            <p class="text-[10px] text-slate-400 uppercase">Music Player</p>
+            <p class="text-xs font-bold text-rose-400 mt-1">▶️ Launch</p>
           </div>
         </div>
       </div>
@@ -254,11 +263,18 @@
 
         <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Apps &amp; Hangouts</p>
         <div class="grid grid-cols-2 gap-2">
+          <button onclick="openApp('youtube'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
+            <span class="text-xl">▶️</span>
+            <div>
+              <p class="text-xs font-semibold text-white">YouTube Music</p>
+              <p class="text-[10px] text-slate-400">Stream &amp; Study Mixes</p>
+            </div>
+          </button>
           <button onclick="openApp('focus'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-xl">🎧</span>
             <div>
-              <p class="text-xs font-semibold text-white">Focus &amp; Lo-Fi</p>
-              <p class="text-[10px] text-slate-400">Timer &amp; Ambient Audio</p>
+              <p class="text-xs font-semibold text-white">Focus Timer</p>
+              <p class="text-[10px] text-slate-400">Pomodoro &amp; Rain Audio</p>
             </div>
           </button>
           <button onclick="openApp('tasks'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
@@ -293,7 +309,7 @@
             <span class="text-xl">🧠</span>
             <div>
               <p class="text-xs font-semibold text-white">Study Buddy</p>
-              <p class="text-[10px] text-slate-400">Flashcards &amp; GPA Calc</p>
+              <p class="text-[10px] text-slate-400">Active Recall Cards</p>
             </div>
           </button>
           <button onclick="openApp('settings'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
@@ -309,11 +325,11 @@
 
     <!-- BOTTOM OS DOCK -->
     <footer class="h-16 px-4 flex items-center justify-center z-50 shrink-0 pb-2">
-      <div class="os-glass px-3 py-2 rounded-2xl flex items-center gap-2 shadow-2xl border border-white/15">
-        <button onclick="toggleStartMenu()" class="w-10 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center font-bold shadow transition cursor-pointer" title="App Launcher">
+      <div class="os-glass px-3 py-2 rounded-2xl flex items-center gap-1.5 sm:gap-2 shadow-2xl border border-white/15 overflow-x-auto max-w-full">
+        <button onclick="toggleStartMenu()" class="w-10 h-10 shrink-0 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center font-bold shadow transition cursor-pointer" title="App Launcher">
           ⊞
         </button>
-        <div class="h-6 w-[1px] bg-white/15 mx-1"></div>
+        <div class="h-6 w-[1px] bg-white/15 mx-0.5 shrink-0"></div>
         <div id="dock-apps" class="flex items-center gap-1.5 sm:gap-2"></div>
       </div>
     </footer>
@@ -352,7 +368,7 @@
         id: 1,
         title: 'Quick Study Ideas',
         updated: 'Today',
-        content: 'Use active recall + 25 min Pomodoro sprints.\nTake a 5 minute break in the Arcade after every 2 sessions!'
+        content: 'Use active recall + 25 min Pomodoro sprints.\nPut on YouTube Lo-Fi Radio in the background and minimize the player!'
       },
       {
         id: 2,
@@ -372,19 +388,40 @@
     let isCardFlipped = false;
 
     let loungePosts = JSON.parse(localStorage.getItem('campus_os_lounge')) || [
-      { id: 1, author: 'Alex M.', tag: 'Study Tip', text: 'Putting on the rain soundscape in Focus mode + doing 2 sprints got me through an entire chapter 🔥', likes: 12, time: '14m ago' },
+      { id: 1, author: 'Alex M.', tag: 'Music', text: 'Having YouTube Music running in a minimized window while typing notes makes Campus OS feel like a real desktop 🔥', likes: 14, time: '9m ago' },
       { id: 2, author: 'Chloe K.', tag: 'Chill', text: 'Anyone managed to pass 15 points on Snake yet? Keep hitting the wall 😂', likes: 8, time: '1h ago' },
       { id: 3, author: 'Samira', tag: 'Vibes', text: 'Sunset theme + late night study session hits different.', likes: 19, time: '3h ago' }
     ];
 
+    // YouTube Player State
+    const YT_PRESETS = [
+      { name: '🎧 Lo-Fi Girl Beats', id: 'jfKfPfyJRdk', type: 'video' },
+      { name: '🌃 Chill Synthwave', id: '4xDzrJKXOOY', type: 'video' },
+      { name: '🌧️ Rain & Soft Piano', id: 'mPZkdNFkNps', type: 'video' },
+      { name: '☕ Coffee Shop Jazz', id: 'fEvM-OUbaKs', type: 'video' }
+    ];
+
+    let ytFavorites = JSON.parse(localStorage.getItem('campus_os_yt_favs')) || [
+      { title: 'Lo-Fi Hip Hop Radio — Beats to Study/Relax', id: 'jfKfPfyJRdk', type: 'video' },
+      { title: 'Synthwave Radio — Chill Gaming & Study', id: '4xDzrJKXOOY', type: 'video' }
+    ];
+
+    let activeYtSource = {
+      title: 'Lo-Fi Hip Hop Radio — Beats to Study/Relax',
+      id: 'jfKfPfyJRdk',
+      type: 'video',
+      autoplay: false
+    };
+
     const APPS = {
-      focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer', icon: '🎧', width: 520, height: 440 },
-      tasks:    { id: 'tasks',    title: 'Tasks & Goals',       icon: '✅', width: 580, height: 450 },
-      notes:    { id: 'notes',    title: 'Scratchpad',          icon: '📝', width: 660, height: 450 },
-      arcade:   { id: 'arcade',   title: 'Arcade Zone',         icon: '🕹️', width: 540, height: 490 },
-      lounge:   { id: 'lounge',   title: 'Campus Lounge',       icon: '💬', width: 600, height: 470 },
-      study:    { id: 'study',    title: 'Study Buddy',         icon: '🧠', width: 620, height: 460 },
-      settings: { id: 'settings', title: 'Personalize',         icon: '🎨', width: 540, height: 440 }
+      youtube:  { id: 'youtube',  title: 'YouTube Music & Video', icon: '▶️', width: 640, height: 500 },
+      focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer',   icon: '🎧', width: 520, height: 440 },
+      tasks:    { id: 'tasks',    title: 'Tasks & Goals',         icon: '✅', width: 580, height: 450 },
+      notes:    { id: 'notes',    title: 'Scratchpad',            icon: '📝', width: 660, height: 450 },
+      arcade:   { id: 'arcade',   title: 'Arcade Zone',           icon: '🕹️', width: 540, height: 490 },
+      lounge:   { id: 'lounge',   title: 'Campus Lounge',         icon: '💬', width: 600, height: 470 },
+      study:    { id: 'study',    title: 'Study Buddy',           icon: '🧠', width: 620, height: 460 },
+      settings: { id: 'settings', title: 'Personalize',           icon: '🎨', width: 540, height: 440 }
     };
 
     let openWindows = {};
@@ -395,7 +432,6 @@
     window.addEventListener('DOMContentLoaded', async () => {
       startClock();
       applyWallpaper(userPrefs.wallpaper);
-      document.getElementById('widget-snake-high').textContent = localStorage.getItem('campus_os_snake_high') || '0';
 
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session && session.user) {
@@ -501,7 +537,7 @@
       updateTaskWidget();
 
       if (Object.keys(openWindows).length === 0) {
-        openApp('focus');
+        openApp('youtube');
       }
     }
 
@@ -566,7 +602,7 @@
           else openApp(app.id);
         };
         btn.title = app.title;
-        btn.className = `relative w-10 h-10 rounded-xl flex items-center justify-center text-lg transition cursor-pointer ${
+        btn.className = `relative w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-lg transition cursor-pointer ${
           isOpen ? 'bg-white/15 border border-white/20 scale-105' : 'hover:bg-white/10'
         }`;
         btn.innerHTML = `
@@ -590,14 +626,14 @@
         return;
       }
 
-      const offset = Object.keys(openWindows).length * 26;
+      const offset = Object.keys(openWindows).length * 24;
       const isMobile = window.innerWidth < 768;
 
       openWindows[appId] = {
         minimized: false,
         maximized: isMobile,
-        x: isMobile ? 0 : 140 + offset,
-        y: isMobile ? 0 : 28 + offset
+        x: isMobile ? 0 : 135 + offset,
+        y: isMobile ? 0 : 24 + offset
       };
 
       const winEl = document.createElement('div');
@@ -623,7 +659,7 @@
             <span class="text-xs font-semibold text-white tracking-wide">${app.title}</span>
           </div>
           <div class="flex items-center gap-1.5" onmousedown="event.stopPropagation()">
-            <button onclick="minimizeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Minimize">─</button>
+            <button onclick="minimizeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Minimize (Keep Playing in Background)">─</button>
             <button onclick="toggleMaximize('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Maximize">□</button>
             <button onclick="closeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-rose-500/80 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Close">✕</button>
           </div>
@@ -711,7 +747,85 @@
     window.addEventListener('mouseup', () => { dragInfo = null; });
 
     // ==========================================
-    // 1. FOCUS TIMER & AMBIENT AUDIO ENGINE
+    // YOUTUBE MUSIC PARSER & CONTROLS
+    // ==========================================
+    function parseYouTubeInput(input) {
+      const raw = input.trim();
+      if (!raw) return null;
+
+      // Check for playlist ID
+      const listMatch = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+      if (listMatch && !raw.includes('watch?v=')) {
+        return { type: 'playlist', id: listMatch[1] };
+      }
+
+      // Check for standard watch?v=, youtu.be/, embed/, shorts/, or raw 11-char ID
+      const vidMatch = raw.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
+                       (raw.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(raw) ? [null, raw] : null);
+
+      if (vidMatch) {
+        return { type: 'video', id: vidMatch[1] };
+      }
+
+      if (listMatch) {
+        return { type: 'playlist', id: listMatch[1] };
+      }
+
+      return null;
+    }
+
+    function getYouTubeEmbedUrl(source) {
+      const auto = source.autoplay ? '1' : '0';
+      if (source.type === 'playlist') {
+        return `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(source.id)}&autoplay=${auto}&rel=0`;
+      }
+      return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(source.id)}?autoplay=${auto}&rel=0`;
+    }
+
+    function playYouTubePreset(id, type, title) {
+      activeYtSource = { id, type, title, autoplay: true };
+      document.getElementById('top-yt-status').textContent = title.slice(0, 18) + (title.length > 18 ? '…' : '');
+      renderAppContent('youtube');
+    }
+
+    function handleYouTubeUrlSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('yt-url-input');
+      const parsed = parseYouTubeInput(input.value);
+      if (!parsed) {
+        alert('Please paste a valid YouTube video or playlist URL.');
+        return;
+      }
+      activeYtSource = {
+        id: parsed.id,
+        type: parsed.type,
+        title: parsed.type === 'playlist' ? 'Custom YouTube Playlist' : `YouTube Track (${parsed.id})`,
+        autoplay: true
+      };
+      document.getElementById('top-yt-status').textContent = 'Playing Custom Track';
+      renderAppContent('youtube');
+    }
+
+    function saveCurrentYtFavorite() {
+      const customTitle = prompt('Name this track or playlist for your saved list:', activeYtSource.title);
+      if (!customTitle) return;
+      ytFavorites.unshift({
+        title: customTitle.trim(),
+        id: activeYtSource.id,
+        type: activeYtSource.type
+      });
+      localStorage.setItem('campus_os_yt_favs', JSON.stringify(ytFavorites));
+      renderAppContent('youtube');
+    }
+
+    function removeYtFavorite(idx) {
+      ytFavorites.splice(idx, 1);
+      localStorage.setItem('campus_os_yt_favs', JSON.stringify(ytFavorites));
+      renderAppContent('youtube');
+    }
+
+    // ==========================================
+    // FOCUS TIMER & AMBIENT AUDIO ENGINE
     // ==========================================
     let pomodoroSeconds = 25 * 60;
     let pomodoroRunning = false;
@@ -759,13 +873,13 @@
       stopAmbientSound();
       if (activeAmbientType === type || type === 'off') {
         activeAmbientType = 'off';
-        document.getElementById('sound-status-text').textContent = 'Lo-Fi Off';
+        document.getElementById('sound-status-text').textContent = 'Ambient Off';
         renderAppContent('focus');
         return;
       }
 
       activeAmbientType = type;
-      document.getElementById('sound-status-text').textContent = type === 'rain' ? 'Rain On' : 'Lo-Fi Hum';
+      document.getElementById('sound-status-text').textContent = type === 'rain' ? 'Rain On' : 'Deep Hum';
 
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -814,7 +928,7 @@
     }
 
     // ==========================================
-    // 4. ARCADE ZONE (SNAKE + TIC-TAC-TOE)
+    // ARCADE ZONE (SNAKE + TIC-TAC-TOE)
     // ==========================================
     let arcadeTab = 'snake';
     let snakeInterval = null;
@@ -848,9 +962,6 @@
         const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
         if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
           clearInterval(snakeInterval);
-          const best = Math.max(snakeScore, Number(localStorage.getItem('campus_os_snake_high') || 0));
-          localStorage.setItem('campus_os_snake_high', best);
-          document.getElementById('widget-snake-high').textContent = best;
           ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.fillStyle = '#fb7185';
@@ -873,13 +984,11 @@
         ctx.fillStyle = '#090e1a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Food
         ctx.fillStyle = '#f43f5e';
         ctx.beginPath();
         ctx.arc(food.x * 20 + 10, food.y * 20 + 10, 7, 0, Math.PI * 2);
         ctx.fill();
 
-        // Snake
         snake.forEach((seg, idx) => {
           ctx.fillStyle = idx === 0 ? '#34d399' : '#10b981';
           ctx.fillRect(seg.x * 20 + 1, seg.y * 20 + 1, 18, 18);
@@ -919,11 +1028,73 @@
     }
 
     // ==========================================
-    // APP CONTENT RENDERERS (ALL 7 APPS)
+    // APP CONTENT RENDERERS (ALL 8 APPS)
     // ==========================================
     function renderAppContent(appId) {
       const body = document.getElementById(`win-body-${appId}`);
       if (!body) return;
+
+      // 0. YOUTUBE MUSIC & VIDEO PLAYER
+      if (appId === 'youtube') {
+        const embedUrl = getYouTubeEmbedUrl(activeYtSource);
+        body.innerHTML = `
+          <div class="space-y-3.5">
+            <!-- URL Input Bar -->
+            <form onsubmit="handleYouTubeUrlSubmit(event)" class="flex gap-2">
+              <input id="yt-url-input" type="text" required placeholder="Paste any YouTube video or playlist link..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold cursor-pointer shrink-0">Play</button>
+            </form>
+
+            <!-- Responsive 16:9 YouTube Player -->
+            <div class="relative w-full rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg" style="padding-top: 52%;">
+              <iframe
+                class="absolute inset-0 w-full h-full"
+                src="${embedUrl}"
+                title="${activeYtSource.title}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+              </iframe>
+            </div>
+
+            <!-- Now Playing Bar -->
+            <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10">
+              <div class="overflow-hidden">
+                <p class="text-[10px] uppercase tracking-wider text-rose-400 font-semibold">Now Loaded • Minimize window (─) to keep listening</p>
+                <p class="text-xs font-semibold text-white truncate">${activeYtSource.title}</p>
+              </div>
+              <button onclick="saveCurrentYtFavorite()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] font-medium text-white shrink-0 cursor-pointer">+ Save</button>
+            </div>
+
+            <!-- Quick Study & Chill Stations -->
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Instant Study &amp; Chill Stations</p>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                ${YT_PRESETS.map(p => `
+                  <button onclick="playYouTubePreset('${p.id}', '${p.type}', '${p.name.replace(/'/g, "\\'")}')" class="p-2 rounded-xl border text-[11px] font-medium text-left truncate cursor-pointer transition ${
+                    activeYtSource.id === p.id ? 'bg-rose-500/20 border-rose-400/50 text-white' : 'bg-slate-950/50 border-white/10 hover:bg-white/10 text-slate-300'
+                  }">${p.name}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Saved Playlist / Favorites -->
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Your Saved Tracks &amp; Playlists</p>
+              <div class="space-y-1.5">
+                ${ytFavorites.map((fav, i) => `
+                  <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-950/45 border border-white/5 hover:border-white/15">
+                    <button onclick="playYouTubePreset('${fav.id}', '${fav.type}', '${fav.title.replace(/'/g, "\\'")}')" class="text-xs text-slate-200 hover:text-rose-400 font-medium truncate text-left flex-1 cursor-pointer">
+                      ▶ ${fav.title}
+                    </button>
+                    <button onclick="removeYtFavorite(${i})" class="text-[11px] text-slate-500 hover:text-rose-400 ml-2 cursor-pointer">✕</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
 
       // 1. FOCUS & LO-FI TIMER
       if (appId === 'focus') {
@@ -945,7 +1116,7 @@
             </button>
 
             <div class="w-full pt-4 border-t border-white/10">
-              <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Ambient Study Soundscape</p>
+              <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Built-In Ambient Soundscape</p>
               <div class="grid grid-cols-3 gap-2">
                 <button onclick="toggleAmbientSound('rain')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${activeAmbientType === 'rain' ? 'bg-sky-500/25 border-sky-400 text-white' : 'bg-slate-950/50 border-white/10 text-slate-300'}">🌧️ Soft Rain</button>
                 <button onclick="toggleAmbientSound('lofi')" class="p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition ${activeAmbientType === 'lofi' ? 'bg-indigo-500/25 border-indigo-400 text-white' : 'bg-slate-950/50 border-white/10 text-slate-300'}">🌊 Deep Hum</button>
@@ -1082,7 +1253,7 @@
         `;
       }
 
-      // 6. STUDY BUDDY (FLASHCARDS + QUICK GRADE CALC)
+      // 6. STUDY BUDDY (FLASHCARDS)
       if (appId === 'study') {
         const card = flashcards[currentCardIndex] || { q: 'No cards yet', a: 'Add one below!' };
         body.innerHTML = `
