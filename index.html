@@ -76,9 +76,9 @@
           🚀
         </div>
         <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-400/25 text-indigo-300 text-[11px] font-medium mb-2">
-          <span>Campus OS v4.1</span>
+          <span>Campus OS v4.2</span>
           <span>•</span>
-          <span>Live Messenger, Cloud &amp; Study Suite</span>
+          <span>Global Chat + Private 1-on-1 DMs</span>
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-white">Welcome to Campus OS</h1>
         <p class="text-xs text-slate-400 mt-1">Your assistive study workspace, arcade &amp; live messenger hub</p>
@@ -120,7 +120,7 @@
           Create an Account
         </button>
         <button onclick="enterDemoMode()" class="text-slate-400 hover:text-white font-medium cursor-pointer">
-          Guest Mode (Read-Only Chat) →
+          Guest Mode (Read-Only) →
         </button>
       </div>
     </div>
@@ -186,7 +186,7 @@
         </button>
         <button onclick="openApp('lounge')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">💬</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Global Chat</span>
+          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Messenger</span>
         </button>
         <button onclick="openApp('arcade')" class="group w-24 p-2 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1 cursor-pointer">
           <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-xl shadow-lg group-hover:scale-105 transition">🕹️</div>
@@ -288,7 +288,7 @@
             <span class="text-lg">🧠</span><div><p class="text-xs font-semibold text-white">Study Buddy</p><p class="text-[10px] text-slate-400">Cards &amp; Summarizer</p></div>
           </button>
           <button onclick="openApp('lounge'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
-            <span class="text-lg">💬</span><div><p class="text-xs font-semibold text-white">Global Chat</p><p class="text-[10px] text-slate-400">Live Messenger</p></div>
+            <span class="text-lg">💬</span><div><p class="text-xs font-semibold text-white">Messenger</p><p class="text-[10px] text-slate-400">Global &amp; Private DMs</p></div>
           </button>
           <button onclick="openApp('arcade'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-lg">🕹️</span><div><p class="text-xs font-semibold text-white">Arcade Zone</p><p class="text-[10px] text-slate-400">Snake, 2048 &amp; Typing</p></div>
@@ -374,7 +374,13 @@
     let currentUser = null;
     let liveChannel = null;
     let chatErrorMsg = '';
-    let activeChatChannel = 'All';
+
+    // Messenger & Direct Message State
+    let activeChatChannel = 'All';     // 'All' | 'Study' | 'Music' | 'Chill'
+    let activeDmRecipient = null;      // { user_id, name, online } or null for Global Room
+    let onlinePeers = [];              // [{ user_id, name, status, isSelf }]
+    let directMessages = [];           // Loaded 1-on-1 messages involving currentUser
+    let unreadDmCounts = {};           // { [sender_id]: number }
     let replyingToMessage = null;
     let typingUserBanner = '';
     let typingClearTimeout = null;
@@ -425,7 +431,6 @@
     ];
 
     let leaderboard = [];
-
     let calcDisplay = '0';
     let gradeScore = 78;
     let gradeMax = 100;
@@ -450,16 +455,16 @@
     };
 
     const APPS = {
-      youtube:  { id: 'youtube',  title: 'YouTube Music & Video', icon: '▶️', width: 640, height: 500 },
-      focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer',   icon: '🎧', width: 520, height: 440 },
-      tasks:    { id: 'tasks',    title: 'Tasks & Goals',         icon: '✅', width: 580, height: 450 },
-      notes:    { id: 'notes',    title: 'Scratchpad',            icon: '📝', width: 660, height: 450 },
-      study:    { id: 'study',    title: 'Study Buddy',           icon: '🧠', width: 640, height: 480 },
-      lounge:   { id: 'lounge',   title: 'Global Campus Messenger', icon: '💬', width: 640, height: 540 },
-      arcade:   { id: 'arcade',   title: 'Arcade Zone',           icon: '🕹️', width: 580, height: 520 },
-      habits:   { id: 'habits',   title: 'Habit Streaks',         icon: '🔥', width: 540, height: 440 },
-      calc:     { id: 'calc',     title: 'Scientific Calculator', icon: '🧮', width: 440, height: 500 },
-      settings: { id: 'settings', title: 'Personalize',           icon: '🎨', width: 540, height: 440 }
+      youtube:  { id: 'youtube',  title: 'YouTube Music & Video',   icon: '▶️', width: 640, height: 500 },
+      focus:    { id: 'focus',    title: 'Focus & Lo-Fi Timer',     icon: '🎧', width: 520, height: 440 },
+      tasks:    { id: 'tasks',    title: 'Tasks & Goals',           icon: '✅', width: 580, height: 450 },
+      notes:    { id: 'notes',    title: 'Scratchpad',              icon: '📝', width: 660, height: 450 },
+      study:    { id: 'study',    title: 'Study Buddy',             icon: '🧠', width: 640, height: 480 },
+      lounge:   { id: 'lounge',   title: 'Global Campus Messenger', icon: '💬', width: 760, height: 540 },
+      arcade:   { id: 'arcade',   title: 'Arcade Zone',             icon: '🕹️', width: 580, height: 520 },
+      habits:   { id: 'habits',   title: 'Habit Streaks',           icon: '🔥', width: 540, height: 440 },
+      calc:     { id: 'calc',     title: 'Scientific Calculator',   icon: '🧮', width: 440, height: 500 },
+      settings: { id: 'settings', title: 'Personalize',             icon: '🎨', width: 540, height: 440 }
     };
 
     let openWindows = {};
@@ -601,6 +606,9 @@
 
     async function signOut() {
       isDemoMode = false;
+      activeDmRecipient = null;
+      directMessages = [];
+      unreadDmCounts = {};
       stopAmbientSound();
       clearInterval(pomodoroInterval);
       clearInterval(snakeInterval);
@@ -612,7 +620,7 @@
     }
 
     // ==========================================
-    // GLOBAL MESSENGER + REALTIME + CLOUD SYNC
+    // GLOBAL MESSENGER + 1-ON-1 DMs + REALTIME
     // ==========================================
     function escapeHtml(str) {
       return String(str || '')
@@ -641,6 +649,10 @@
       if (box) box.scrollTop = box.scrollHeight;
     }
 
+    function getTotalUnreadDms() {
+      return Object.values(unreadDmCounts).reduce((sum, n) => sum + (n || 0), 0);
+    }
+
     async function fetchLoungePosts(autoScroll = false) {
       const { data, error } = await supabaseClient
         .from('campus_lounge_posts')
@@ -657,15 +669,59 @@
       if (data) {
         loungePosts = data;
         localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-        if (openWindows['lounge']) {
+        if (openWindows['lounge'] && !activeDmRecipient) {
           renderAppContent('lounge');
           if (autoScroll) scrollChatToBottom();
         }
       }
     }
 
+    async function fetchDirectMessages(autoScroll = false) {
+      if (isDemoMode || !currentUser?.id) return;
+      const { data, error } = await supabaseClient
+        .from('campus_direct_messages')
+        .select('*')
+        .or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
+        .order('created_at', { ascending: true })
+        .limit(150);
+
+      if (error) {
+        chatErrorMsg = `DM sync note: ${error.message}`;
+        return;
+      }
+
+      if (data) {
+        directMessages = data;
+        if (openWindows['lounge'] && activeDmRecipient) {
+          renderAppContent('lounge');
+          if (autoScroll) scrollChatToBottom();
+        }
+      }
+    }
+
+    function openGlobalRoom() {
+      activeDmRecipient = null;
+      replyingToMessage = null;
+      typingUserBanner = '';
+      renderAppContent('lounge');
+      scrollChatToBottom();
+    }
+
+    function openDirectChat(userId, userName) {
+      if (isDemoMode) return;
+      if (!userId || String(userId).startsWith('guest-') || userId === currentUser?.id) return;
+      activeDmRecipient = { user_id: userId, name: userName || 'Student' };
+      unreadDmCounts[userId] = 0;
+      replyingToMessage = null;
+      typingUserBanner = '';
+      renderDock();
+      renderAppContent('lounge');
+      scrollChatToBottom();
+    }
+
     async function initLiveRealtimeAndCloud(demo) {
       await fetchLoungePosts(true);
+      if (!demo) await fetchDirectMessages(false);
 
       const { data: lbData } = await supabaseClient
         .from('campus_arcade_scores')
@@ -713,17 +769,18 @@
       liveChannel = supabaseClient.channel('campus-os-global-room', {
         config: {
           broadcast: { self: false },
-          presence: { key: `${userPrefs.nickname}-${currentUser?.id || Math.random()}` }
+          presence: { key: `${currentUser?.id || Math.random()}` }
         }
       });
 
       liveChannel
+        // Global room broadcast
         .on('broadcast', { event: 'new_chat_msg' }, ({ payload }) => {
           if (!payload) return;
           if (!loungePosts.some(p => String(p.id) === String(payload.id))) {
             loungePosts.unshift(payload);
             localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
-            if (openWindows['lounge']) {
+            if (openWindows['lounge'] && !activeDmRecipient) {
               renderAppContent('lounge');
               scrollChatToBottom();
             }
@@ -732,10 +789,40 @@
         .on('broadcast', { event: 'delete_chat_msg' }, ({ payload }) => {
           if (!payload?.id) return;
           loungePosts = loungePosts.filter(p => String(p.id) !== String(payload.id));
-          if (openWindows['lounge']) renderAppContent('lounge');
+          if (openWindows['lounge'] && !activeDmRecipient) renderAppContent('lounge');
         })
+        // Private 1-on-1 DM broadcast
+        .on('broadcast', { event: 'new_dm_msg' }, ({ payload }) => {
+          if (!payload || isDemoMode || !currentUser?.id) return;
+          if (payload.recipient_id !== currentUser.id && payload.sender_id !== currentUser.id) return;
+
+          if (!directMessages.some(m => String(m.id) === String(payload.id))) {
+            directMessages.push(payload);
+            const isViewingThisThread = openWindows['lounge'] && !openWindows['lounge'].minimized && activeDmRecipient?.user_id === payload.sender_id;
+            if (!isViewingThisThread && payload.sender_id !== currentUser.id) {
+              unreadDmCounts[payload.sender_id] = (unreadDmCounts[payload.sender_id] || 0) + 1;
+              renderDock();
+            }
+            if (openWindows['lounge']) {
+              renderAppContent('lounge');
+              if (isViewingThisThread) scrollChatToBottom();
+            }
+          }
+        })
+        .on('broadcast', { event: 'delete_dm_msg' }, ({ payload }) => {
+          if (!payload?.id) return;
+          directMessages = directMessages.filter(m => String(m.id) !== String(payload.id));
+          if (openWindows['lounge'] && activeDmRecipient) renderAppContent('lounge');
+        })
+        // Typing indicators (Global or Private DM)
         .on('broadcast', { event: 'user_typing' }, ({ payload }) => {
-          if (!payload || payload.user === userPrefs.nickname) return;
+          if (!payload || payload.user_id === currentUser?.id) return;
+          const isDmTyping = Boolean(payload.dm_to);
+          if (isDmTyping) {
+            if (payload.dm_to !== currentUser?.id || activeDmRecipient?.user_id !== payload.user_id) return;
+          } else {
+            if (activeDmRecipient) return;
+          }
           typingUserBanner = `${payload.user} is typing...`;
           const el = document.getElementById('chat-typing-indicator');
           if (el) el.textContent = typingUserBanner;
@@ -746,8 +833,12 @@
             if (el2) el2.textContent = '';
           }, 2500);
         })
+        // Database table realtime listeners
         .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_lounge_posts' }, () => {
           fetchLoungePosts(false);
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_direct_messages' }, () => {
+          fetchDirectMessages(false);
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_arcade_scores' }, async () => {
           const { data } = await supabaseClient
@@ -761,23 +852,46 @@
             if (openWindows['arcade']) renderAppContent('arcade');
           }
         })
+        // Presence tracking for online 1-on-1 DM directory
         .on('presence', { event: 'sync' }, () => {
           const state = liveChannel.presenceState();
-          const count = Object.keys(state).length || 1;
+          const map = new Map();
+          Object.values(state).forEach(presences => {
+            presences.forEach(p => {
+              if (!p.user_id) return;
+              map.set(p.user_id, {
+                user_id: p.user_id,
+                name: p.user || 'Student',
+                status: p.status || 'Online',
+                isGuest: Boolean(p.isGuest),
+                isSelf: p.user_id === currentUser?.id
+              });
+            });
+          });
+          onlinePeers = Array.from(map.values());
+          const count = onlinePeers.length || 1;
           const el = document.getElementById('online-users-count');
           if (el) el.textContent = `${count} online now`;
           const chatOnline = document.getElementById('chat-header-online');
           if (chatOnline) chatOnline.textContent = `${count} online`;
+          if (openWindows['lounge']) renderAppContent('lounge');
         })
         .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
-            await liveChannel.track({ user: userPrefs.nickname, online_at: new Date().toISOString() });
+            await liveChannel.track({
+              user_id: currentUser?.id,
+              user: userPrefs.nickname,
+              status: userPrefs.status,
+              isGuest: isDemoMode,
+              online_at: new Date().toISOString()
+            });
           }
         });
 
       setInterval(() => {
         if (openWindows['lounge'] && !openWindows['lounge'].minimized) {
-          fetchLoungePosts(false);
+          if (activeDmRecipient) fetchDirectMessages(false);
+          else fetchLoungePosts(false);
         }
       }, 6000);
     }
@@ -872,6 +986,8 @@
     function renderDock() {
       const dock = document.getElementById('dock-apps');
       dock.innerHTML = '';
+      const totalUnread = getTotalUnreadDms();
+
       Object.values(APPS).forEach(app => {
         const win = openWindows[app.id];
         const isOpen = Boolean(win);
@@ -886,6 +1002,7 @@
         }`;
         btn.innerHTML = `
           <span>${app.icon}</span>
+          ${app.id === 'lounge' && totalUnread > 0 ? `<span class="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center shadow">${totalUnread}</span>` : ''}
           ${isOpen ? `<span class="absolute -bottom-1 w-1.5 h-1.5 rounded-full ${win.minimized ? 'bg-amber-400' : 'bg-indigo-400'}"></span>` : ''}
         `;
         dock.appendChild(btn);
@@ -902,7 +1019,15 @@
         if (el) el.classList.remove('hidden');
         focusWindow(appId);
         renderDock();
-        if (appId === 'lounge') fetchLoungePosts(true);
+        if (appId === 'lounge') {
+          if (activeDmRecipient) {
+            unreadDmCounts[activeDmRecipient.user_id] = 0;
+            renderDock();
+            fetchDirectMessages(true);
+          } else {
+            fetchLoungePosts(true);
+          }
+        }
         return;
       }
 
@@ -912,8 +1037,8 @@
       openWindows[appId] = {
         minimized: false,
         maximized: isMobile,
-        x: isMobile ? 0 : 135 + offset,
-        y: isMobile ? 0 : 20 + offset
+        x: isMobile ? 0 : 125 + offset,
+        y: isMobile ? 0 : 18 + offset
       };
 
       const winEl = document.createElement('div');
@@ -958,6 +1083,7 @@
       if (appId === 'lounge') {
         scrollChatToBottom();
         fetchLoungePosts(true);
+        if (!isDemoMode) fetchDirectMessages(false);
       }
     }
 
@@ -1054,16 +1180,12 @@
     function parseYouTubeInput(input) {
       const raw = input.trim();
       if (!raw) return null;
-
       const listMatch = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
       if (listMatch && !raw.includes('watch?v=')) return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
-
       const vidMatch = raw.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
                        (raw.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(raw) ? [null, raw] : null);
-
       if (vidMatch) return { type: 'video', id: vidMatch[1], title: `YouTube Video (${vidMatch[1]})` };
       if (listMatch) return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
-
       return { type: 'search', query: raw, id: raw, title: `Search: "${raw}"` };
     }
 
@@ -1486,11 +1608,9 @@
               <input id="yt-url-input" type="text" required placeholder="Search songs, artists, mixes OR paste YouTube URL..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
               <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold cursor-pointer shrink-0">Search / Play</button>
             </form>
-
             <div class="relative w-full rounded-xl overflow-hidden bg-black border border-white/10 shadow-lg" style="padding-top: 52%;">
               <iframe class="absolute inset-0 w-full h-full" src="${embedUrl}" title="${activeYtSource.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             </div>
-
             <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10">
               <div class="overflow-hidden">
                 <p class="text-[10px] uppercase tracking-wider text-rose-400 font-semibold">Now Playing • Use top-bar mini-player anytime</p>
@@ -1498,7 +1618,6 @@
               </div>
               <button onclick="saveCurrentYtFavorite()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] font-medium text-white shrink-0 cursor-pointer">+ Save</button>
             </div>
-
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2">Instant Study &amp; Chill Stations</p>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -1509,7 +1628,6 @@
                 `).join('')}
               </div>
             </div>
-
             <div>
               <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Saved Tracks &amp; Searches</p>
               <div class="space-y-1.5">
@@ -1536,16 +1654,13 @@
               <button onclick="setPomodoroPreset(45)" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">45m Deep Work</button>
               <button onclick="setPomodoroPreset(5)" class="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">5m Break</button>
             </div>
-
             <div class="w-48 h-48 rounded-full border-4 border-indigo-500/40 bg-slate-950/60 flex flex-col items-center justify-center shadow-inner">
               <span id="pomo-display" class="font-mono-code text-4xl font-bold text-white tracking-wider">${formatTimer(pomodoroSeconds)}</span>
               <span class="text-[11px] text-indigo-300 mt-1">${pomodoroRunning ? 'Session Active' : 'Paused'}</span>
             </div>
-
             <button onclick="togglePomodoro()" class="px-8 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition cursor-pointer">
               ${pomodoroRunning ? 'Pause Timer' : 'Start Focus Sprint'}
             </button>
-
             <div class="w-full pt-4 border-t border-white/10">
               <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Built-In Ambient Soundscape</p>
               <div class="grid grid-cols-3 gap-2">
@@ -1572,7 +1687,6 @@
               </select>
               <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold cursor-pointer">Add</button>
             </form>
-
             <div class="space-y-2">
               ${tasks.map(t => `
                 <div onclick="toggleOsTask(${t.id})" class="p-3 rounded-xl bg-slate-950/50 border border-white/10 hover:border-white/20 flex items-center justify-between cursor-pointer">
@@ -1621,139 +1735,219 @@
         `;
       }
 
-      // 4. REDESIGNED GLOBAL MESSENGER WITH THREADED REPLIES
+      // 4. GLOBAL CAMPUS MESSENGER + 1-ON-1 DIRECT MESSAGES
       if (appId === 'lounge') {
-        const filteredPosts = (activeChatChannel === 'All'
-          ? loungePosts
-          : loungePosts.filter(p => (p.tag || 'Chill').toLowerCase() === activeChatChannel.toLowerCase())
-        ).slice().reverse(); // Chronological oldest -> newest at bottom like a messenger
+        const isDmMode = Boolean(activeDmRecipient);
+
+        // Build Direct Message contacts list (online authenticated peers + past DM partners)
+        const dmContactsMap = new Map();
+        onlinePeers.forEach(p => {
+          if (!p.isSelf && !p.isGuest) {
+            dmContactsMap.set(p.user_id, { user_id: p.user_id, name: p.name, online: true });
+          }
+        });
+        directMessages.forEach(m => {
+          const otherId = m.sender_id === currentUser?.id ? m.recipient_id : m.sender_id;
+          const otherName = m.sender_id === currentUser?.id ? m.recipient_name : m.sender_name;
+          if (otherId && !dmContactsMap.has(otherId)) {
+            dmContactsMap.set(otherId, { user_id: otherId, name: otherName || 'Student', online: false });
+          }
+        });
+        const dmContacts = Array.from(dmContactsMap.values());
+
+        // Filter messages for either Global Room or Active 1-on-1 DM Thread
+        const displayedMessages = isDmMode
+          ? directMessages.filter(m =>
+              (m.sender_id === currentUser?.id && m.recipient_id === activeDmRecipient.user_id) ||
+              (m.sender_id === activeDmRecipient.user_id && m.recipient_id === currentUser?.id)
+            )
+          : (activeChatChannel === 'All'
+              ? loungePosts
+              : loungePosts.filter(p => (p.tag || 'Chill').toLowerCase() === activeChatChannel.toLowerCase())
+            ).slice().reverse();
 
         body.innerHTML = `
-          <div class="flex flex-col h-full bg-slate-950/40">
-            <!-- Top Messenger Room Header -->
-            <div class="px-4 py-2.5 bg-slate-900/90 border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
-              <div class="flex items-center gap-1.5 overflow-x-auto">
-                ${['All', 'Study', 'Music', 'Chill'].map(ch => `
-                  <button onclick="activeChatChannel='${ch}'; renderAppContent('lounge'); scrollChatToBottom()" class="px-3 py-1 rounded-full text-[11px] font-semibold cursor-pointer transition ${
-                    activeChatChannel === ch
-                      ? 'bg-sky-600 text-white shadow-sm shadow-sky-500/30'
-                      : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
-                  }">#${ch}</button>
-                `).join('')}
+          <div class="flex h-full bg-slate-950/40 overflow-hidden">
+            <!-- Left Sidebar: Rooms & 1-on-1 Direct Messages -->
+            <aside class="w-44 sm:w-52 bg-slate-950/75 border-r border-white/10 flex flex-col shrink-0">
+              <div class="p-2.5 border-b border-white/10">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 mb-1.5">Channels</p>
+                <button onclick="openGlobalRoom()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold cursor-pointer transition ${
+                  !isDmMode ? 'bg-sky-600/25 border border-sky-400/40 text-white' : 'hover:bg-white/5 text-slate-300'
+                }">
+                  <span class="flex items-center gap-2"><span>🌐</span><span>Global Lounge</span></span>
+                </button>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-[10px] text-emerald-300 font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span id="chat-header-online">Live</span>
-                </span>
-                <button onclick="fetchLoungePosts(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Refresh Messages">↻</button>
-              </div>
-            </div>
 
-            ${chatErrorMsg ? `
-              <div class="mx-4 mt-2 p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-[11px] shrink-0">
-                ${escapeHtml(chatErrorMsg)}
-              </div>
-            ` : ''}
-
-            <!-- Scrollable Chat Bubbles Area -->
-            <div id="chat-messages-scroll" class="flex-1 overflow-y-auto custom-scrollbar px-4 py-3 space-y-3">
-              ${filteredPosts.length ? filteredPosts.map(p => {
-                const isMine = (!isDemoMode && currentUser?.id && p.user_id === currentUser.id) || (p.author === userPrefs.nickname && !p.user_id);
-                const msgText = p.content || p.text || '';
-                const avatarGrad = getAvatarColor(p.author);
-                const initial = (p.author || '?').charAt(0).toUpperCase();
-                const timeStr = new Date(p.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                return `
-                  <div class="group flex items-end gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
-                    <!-- User Avatar -->
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-br ${avatarGrad} flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow">
-                      ${initial}
-                    </div>
-
-                    <!-- Message Bubble -->
-                    <div class="max-w-[76%] flex flex-col ${isMine ? 'items-end' : 'items-start'}">
-                      <div class="flex items-center gap-1.5 mb-1 px-1">
-                        <span class="text-[11px] font-semibold ${isMine ? 'text-sky-300' : 'text-slate-300'}">${isMine ? 'You' : escapeHtml(p.author)}</span>
-                        <span class="text-[9px] px-1.5 py-0.2 rounded bg-white/5 text-slate-400">#${escapeHtml(p.tag || 'Chill')}</span>
-                        <span class="text-[9px] text-slate-500">${timeStr}</span>
-                      </div>
-
-                      <div class="relative px-3.5 py-2.5 rounded-2xl shadow-sm ${
-                        isMine
-                          ? 'bg-gradient-to-br from-sky-600 to-indigo-600 text-white rounded-br-sm'
-                          : 'bg-slate-800/95 border border-white/10 text-slate-100 rounded-bl-sm'
-                      }">
-                        ${p.reply_to_author ? `
-                          <div class="mb-2 px-2.5 py-1.5 rounded-lg border-l-2 ${
-                            isMine ? 'bg-black/25 border-sky-200 text-sky-100' : 'bg-slate-950/60 border-sky-400 text-slate-300'
-                          } text-[11px]">
-                            <p class="font-bold text-[10px] opacity-90">↩ ${escapeHtml(p.reply_to_author)}</p>
-                            <p class="truncate opacity-80">${escapeHtml(p.reply_to_text || '')}</p>
-                          </div>
-                        ` : ''}
-
-                        <p class="text-xs leading-relaxed selectable-text break-words">${escapeHtml(msgText)}</p>
-                      </div>
-
-                      <!-- Quick Action Pills (Reply, React, Delete) -->
-                      <div class="flex items-center gap-2 mt-1 px-1 opacity-85 group-hover:opacity-100 transition">
-                        ${!isDemoMode ? `
-                          <button onclick="setReplyTarget('${p.id}')" class="text-[10px] text-slate-400 hover:text-sky-300 font-medium cursor-pointer">↩ Reply</button>
-                          <button onclick="likeLoungePost('${p.id}', ${p.likes || 0})" class="text-[10px] text-slate-400 hover:text-rose-400 cursor-pointer">❤️ ${p.likes || 0}</button>
-                        ` : `
-                          <span class="text-[10px] text-slate-500">❤️ ${p.likes || 0}</span>
-                        `}
-                        ${isMine && !isDemoMode ? `
-                          <button onclick="deleteLoungePost('${p.id}')" class="text-[10px] text-slate-500 hover:text-rose-400 cursor-pointer">Delete</button>
-                        ` : ''}
-                      </div>
-                    </div>
-                  </div>
-                `;
-              }).join('') : `
-                <div class="h-full flex flex-col items-center justify-center text-center text-slate-400 py-10">
-                  <span class="text-3xl mb-2">💬</span>
-                  <p class="text-xs font-medium">No messages in #${activeChatChannel} yet</p>
-                  <p class="text-[11px] text-slate-500 mt-0.5">Start the conversation below!</p>
+              <div class="flex-1 overflow-y-auto custom-scrollbar p-2.5 space-y-1">
+                <div class="flex items-center justify-between px-2 mb-1.5">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Direct Messages</p>
+                  <span id="chat-header-online" class="text-[9px] text-emerald-400 font-medium">${onlinePeers.length || 1} online</span>
                 </div>
-              `}
-            </div>
 
-            <!-- Typing Indicator Bar -->
-            <div id="chat-typing-indicator" class="h-4 px-4 text-[10px] text-sky-300 italic shrink-0">${escapeHtml(typingUserBanner)}</div>
+                ${isDemoMode ? `
+                  <p class="px-2 py-2 text-[11px] text-slate-500 leading-relaxed">Sign in to message online students privately 1-on-1.</p>
+                ` : dmContacts.length ? dmContacts.map(peer => {
+                  const isActive = activeDmRecipient?.user_id === peer.user_id;
+                  const unread = unreadDmCounts[peer.user_id] || 0;
+                  const grad = getAvatarColor(peer.name);
+                  return `
+                    <button onclick="openDirectChat('${peer.user_id}', '${escapeHtml(peer.name).replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-2 py-2 rounded-xl text-left cursor-pointer transition ${
+                      isActive ? 'bg-indigo-600/30 border border-indigo-400/40 text-white' : 'hover:bg-white/5 text-slate-300'
+                    }">
+                      <div class="flex items-center gap-2 overflow-hidden">
+                        <div class="relative w-6 h-6 rounded-full bg-gradient-to-br ${grad} flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                          ${escapeHtml(peer.name).charAt(0).toUpperCase()}
+                          <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-slate-950 ${peer.online ? 'bg-emerald-400' : 'bg-slate-500'}"></span>
+                        </div>
+                        <span class="text-xs font-medium truncate">${escapeHtml(peer.name)}</span>
+                      </div>
+                      ${unread > 0 ? `<span class="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-bold">${unread}</span>` : ''}
+                    </button>
+                  `;
+                }).join('') : `
+                  <p class="px-2 py-3 text-[11px] text-slate-500 leading-relaxed">No other signed-in users online right now. When someone joins, click their name to DM!</p>
+                `}
+              </div>
+            </aside>
 
-            <!-- Bottom Messenger Composer -->
-            <div class="p-3 bg-slate-900/95 border-t border-white/10 shrink-0">
-              ${isDemoMode ? `
-                <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs">
-                  <span class="text-amber-200">🔒 Guests are in read-only mode. Sign in to send messages &amp; replies.</span>
-                  <button onclick="signOut()" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold cursor-pointer shrink-0 ml-2">Sign In</button>
-                </div>
-              ` : `
-                ${replyingToMessage ? `
-                  <div class="mb-2 px-3 py-1.5 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-between gap-2 text-xs">
+            <!-- Right Main Chat Pane -->
+            <div class="flex-1 flex flex-col min-w-0">
+              <!-- Active Conversation Header -->
+              <div class="px-4 py-2.5 bg-slate-900/90 border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
+                ${isDmMode ? `
+                  <div class="flex items-center gap-2.5 overflow-hidden">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br ${getAvatarColor(activeDmRecipient.name)} flex items-center justify-center text-xs font-bold text-white shrink-0">
+                      ${escapeHtml(activeDmRecipient.name).charAt(0).toUpperCase()}
+                    </div>
                     <div class="overflow-hidden">
-                      <p class="text-[10px] font-bold text-sky-300">Replying to ${escapeHtml(replyingToMessage.author)}</p>
-                      <p class="text-[11px] text-slate-300 truncate">${escapeHtml(replyingToMessage.text)}</p>
+                      <p class="text-xs font-bold text-white truncate">${escapeHtml(activeDmRecipient.name)}</p>
+                      <p class="text-[10px] text-indigo-300">🔒 Private 1-on-1 Direct Message</p>
                     </div>
-                    <button onclick="cancelReply()" class="text-slate-400 hover:text-white text-xs px-1.5 cursor-pointer">✕</button>
                   </div>
-                ` : ''}
+                  <button onclick="fetchDirectMessages(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Refresh DMs">↻</button>
+                ` : `
+                  <div class="flex items-center gap-1.5 overflow-x-auto">
+                    ${['All', 'Study', 'Music', 'Chill'].map(ch => `
+                      <button onclick="activeChatChannel='${ch}'; renderAppContent('lounge'); scrollChatToBottom()" class="px-2.5 py-1 rounded-full text-[11px] font-semibold cursor-pointer transition ${
+                        activeChatChannel === ch
+                          ? 'bg-sky-600 text-white shadow-sm shadow-sky-500/30'
+                          : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                      }">#${ch}</button>
+                    `).join('')}
+                  </div>
+                  <button onclick="fetchLoungePosts(true)" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer shrink-0" title="Refresh Messages">↻</button>
+                `}
+              </div>
 
-                <form onsubmit="addLoungePost(event)" class="flex items-center gap-2">
-                  <select id="lounge-tag-select" class="px-2.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-300 focus:outline-none">
-                    <option value="Chill" ${activeChatChannel === 'Chill' ? 'selected' : ''}>#Chill</option>
-                    <option value="Study" ${activeChatChannel === 'Study' ? 'selected' : ''}>#Study</option>
-                    <option value="Music" ${activeChatChannel === 'Music' ? 'selected' : ''}>#Music</option>
-                  </select>
-                  <input id="lounge-input" type="text" required oninput="broadcastTypingStatus()" placeholder="${replyingToMessage ? `Reply to ${replyingToMessage.author}...` : 'Write a message to campus...'}" class="flex-1 px-4 py-2.5 rounded-full bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500" />
-                  <button type="submit" class="w-9 h-9 rounded-full bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center shadow-lg shadow-sky-600/25 cursor-pointer shrink-0 transition" title="Send Message">
-                    ➤
-                  </button>
-                </form>
-              `}
+              ${chatErrorMsg ? `
+                <div class="mx-4 mt-2 p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-[11px] shrink-0">
+                  ${escapeHtml(chatErrorMsg)}
+                </div>
+              ` : ''}
+
+              <!-- Scrollable Messages Stream -->
+              <div id="chat-messages-scroll" class="flex-1 overflow-y-auto custom-scrollbar px-4 py-3 space-y-3">
+                ${displayedMessages.length ? displayedMessages.map(m => {
+                  const senderId = isDmMode ? m.sender_id : m.user_id;
+                  const senderName = isDmMode ? m.sender_name : m.author;
+                  const isMine = (!isDemoMode && currentUser?.id && senderId === currentUser.id) || (!isDmMode && senderName === userPrefs.nickname && !senderId);
+                  const msgText = m.content || m.text || '';
+                  const avatarGrad = getAvatarColor(senderName);
+                  const initial = (senderName || '?').charAt(0).toUpperCase();
+                  const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  const canClickToDm = !isMine && !isDemoMode && senderId && !String(senderId).startsWith('guest-');
+
+                  return `
+                    <div class="group flex items-end gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
+                      <button ${canClickToDm ? `onclick="openDirectChat('${senderId}', '${escapeHtml(senderName).replace(/'/g, "\\'")}')" title="Message ${escapeHtml(senderName)} privately"` : 'disabled'} class="w-7 h-7 rounded-full bg-gradient-to-br ${avatarGrad} flex items-center justify-center text-[11px] font-bold text-white shrink-0 shadow ${canClickToDm ? 'cursor-pointer hover:scale-105 transition' : ''}">
+                        ${initial}
+                      </button>
+
+                      <div class="max-w-[78%] flex flex-col ${isMine ? 'items-end' : 'items-start'}">
+                        <div class="flex items-center gap-1.5 mb-1 px-1">
+                          <span ${canClickToDm ? `onclick="openDirectChat('${senderId}', '${escapeHtml(senderName).replace(/'/g, "\\'")}')" class="text-[11px] font-semibold text-slate-300 hover:text-indigo-300 cursor-pointer"` : `class="text-[11px] font-semibold ${isMine ? 'text-sky-300' : 'text-slate-300'}"`}>${isMine ? 'You' : escapeHtml(senderName)}</span>
+                          ${!isDmMode ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-white/5 text-slate-400">#${escapeHtml(m.tag || 'Chill')}</span>` : ''}
+                          <span class="text-[9px] text-slate-500">${timeStr}</span>
+                        </div>
+
+                        <div class="relative px-3.5 py-2.5 rounded-2xl shadow-sm ${
+                          isMine
+                            ? (isDmMode ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-sm' : 'bg-gradient-to-br from-sky-600 to-indigo-600 text-white rounded-br-sm')
+                            : 'bg-slate-800/95 border border-white/10 text-slate-100 rounded-bl-sm'
+                        }">
+                          ${m.reply_to_author ? `
+                            <div class="mb-2 px-2.5 py-1.5 rounded-lg border-l-2 ${
+                              isMine ? 'bg-black/25 border-sky-200 text-sky-100' : 'bg-slate-950/60 border-sky-400 text-slate-300'
+                            } text-[11px]">
+                              <p class="font-bold text-[10px] opacity-90">↩ ${escapeHtml(m.reply_to_author)}</p>
+                              <p class="truncate opacity-80">${escapeHtml(m.reply_to_text || '')}</p>
+                            </div>
+                          ` : ''}
+                          <p class="text-xs leading-relaxed selectable-text break-words">${escapeHtml(msgText)}</p>
+                        </div>
+
+                        <div class="flex items-center gap-2 mt-1 px-1 opacity-85 group-hover:opacity-100 transition">
+                          ${!isDemoMode ? `
+                            <button onclick="setReplyTarget('${m.id}')" class="text-[10px] text-slate-400 hover:text-sky-300 font-medium cursor-pointer">↩ Reply</button>
+                            ${!isDmMode ? `<button onclick="likeLoungePost('${m.id}', ${m.likes || 0})" class="text-[10px] text-slate-400 hover:text-rose-400 cursor-pointer">❤️ ${m.likes || 0}</button>` : ''}
+                          ` : (!isDmMode ? `<span class="text-[10px] text-slate-500">❤️ ${m.likes || 0}</span>` : '')}
+                          ${isMine && !isDemoMode ? `
+                            <button onclick="${isDmMode ? `deleteDirectMessage('${m.id}')` : `deleteLoungePost('${m.id}')`}" class="text-[10px] text-slate-500 hover:text-rose-400 cursor-pointer">Delete</button>
+                          ` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('') : `
+                  <div class="h-full flex flex-col items-center justify-center text-center text-slate-400 py-10">
+                    <span class="text-3xl mb-2">${isDmMode ? '🔒' : '💬'}</span>
+                    <p class="text-xs font-medium">${isDmMode ? `Start a private conversation with ${escapeHtml(activeDmRecipient.name)}` : `No messages in #${activeChatChannel} yet`}</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">${isDmMode ? 'Only you and this user can see messages sent here.' : 'Say hello below!'}</p>
+                  </div>
+                `}
+              </div>
+
+              <!-- Typing Indicator Bar -->
+              <div id="chat-typing-indicator" class="h-4 px-4 text-[10px] text-sky-300 italic shrink-0">${escapeHtml(typingUserBanner)}</div>
+
+              <!-- Bottom Message Composer -->
+              <div class="p-3 bg-slate-900/95 border-t border-white/10 shrink-0">
+                ${isDemoMode ? `
+                  <div class="flex items-center justify-between px-3.5 py-2 rounded-xl bg-amber-500/10 border border-amber-500/25 text-xs">
+                    <span class="text-amber-200">🔒 Guests are read-only. Sign in to chat &amp; DM.</span>
+                    <button onclick="signOut()" class="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-semibold cursor-pointer shrink-0 ml-2">Sign In</button>
+                  </div>
+                ` : `
+                  ${replyingToMessage ? `
+                    <div class="mb-2 px-3 py-1.5 rounded-xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-between gap-2 text-xs">
+                      <div class="overflow-hidden">
+                        <p class="text-[10px] font-bold text-sky-300">Replying to ${escapeHtml(replyingToMessage.author)}</p>
+                        <p class="text-[11px] text-slate-300 truncate">${escapeHtml(replyingToMessage.text)}</p>
+                      </div>
+                      <button onclick="cancelReply()" class="text-slate-400 hover:text-white text-xs px-1.5 cursor-pointer">✕</button>
+                    </div>
+                  ` : ''}
+
+                  <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2">
+                    ${!isDmMode ? `
+                      <select id="lounge-tag-select" class="px-2.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-slate-300 focus:outline-none">
+                        <option value="Chill" ${activeChatChannel === 'Chill' ? 'selected' : ''}>#Chill</option>
+                        <option value="Study" ${activeChatChannel === 'Study' ? 'selected' : ''}>#Study</option>
+                        <option value="Music" ${activeChatChannel === 'Music' ? 'selected' : ''}>#Music</option>
+                      </select>
+                    ` : ''}
+                    <input id="lounge-input" type="text" required oninput="broadcastTypingStatus()" placeholder="${
+                      replyingToMessage
+                        ? `Reply to ${replyingToMessage.author}...`
+                        : (isDmMode ? `Private message to ${activeDmRecipient.name}...` : 'Message everyone on campus...')
+                    }" class="flex-1 px-4 py-2.5 rounded-full bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500" />
+                    <button type="submit" class="w-9 h-9 rounded-full ${isDmMode ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-sky-600 hover:bg-sky-500'} text-white flex items-center justify-center shadow-lg cursor-pointer shrink-0 transition" title="Send">
+                      ➤
+                    </button>
+                  </form>
+                `}
+              </div>
             </div>
           </div>
         `;
@@ -1768,7 +1962,6 @@
               <button onclick="studySubTab='cards'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'cards' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">🗂️ Flashcards (${flashcards.length})</button>
               <button onclick="studySubTab='summarizer'; renderAppContent('study')" class="px-3 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${studySubTab === 'summarizer' ? 'bg-cyan-600 text-white' : 'bg-white/10 text-slate-300'}">✨ Note Summarizer</button>
             </div>
-
             ${studySubTab === 'cards' ? `
               <div onclick="flipFlashcard()" class="min-h-[150px] p-6 rounded-2xl bg-gradient-to-br from-cyan-600/20 to-indigo-600/20 border border-cyan-400/30 flex flex-col items-center justify-center text-center cursor-pointer transition hover:border-cyan-400/60">
                 <span class="text-[10px] uppercase tracking-widest text-cyan-300 mb-2">${isCardFlipped ? 'Answer' : `Card ${currentCardIndex + 1} of ${flashcards.length} • Click to Flip`}</span>
@@ -1822,7 +2015,6 @@
               ${arcadeTab === '2048' ? `<span class="text-xs font-mono-code text-amber-400">Score: <strong>${score2048}</strong></span>` : ''}
               ${arcadeTab === 'typing' ? `<span id="typing-wpm-disp" class="text-xs font-mono-code text-sky-400">0 WPM</span>` : ''}
             </div>
-
             ${arcadeTab === 'snake' ? `
               <div class="flex flex-col items-center space-y-3">
                 <canvas id="snake-canvas" width="400" height="300" class="rounded-xl border border-white/15 bg-slate-950"></canvas>
@@ -1960,7 +2152,7 @@
     }
 
     // ==========================================
-    // HELPER ACTIONS & LIVE MESSENGER REPLIES
+    // HELPER ACTIONS & 1-ON-1 DM HANDLERS
     // ==========================================
     async function addOsTask(e) {
       e.preventDefault();
@@ -2032,17 +2224,22 @@
       liveChannel.send({
         type: 'broadcast',
         event: 'user_typing',
-        payload: { user: userPrefs.nickname }
+        payload: {
+          user: userPrefs.nickname,
+          user_id: currentUser?.id,
+          dm_to: activeDmRecipient ? activeDmRecipient.user_id : null
+        }
       });
     }
 
-    function setReplyTarget(postId) {
+    function setReplyTarget(msgId) {
       if (isDemoMode) return;
-      const target = loungePosts.find(p => String(p.id) === String(postId));
+      const sourceList = activeDmRecipient ? directMessages : loungePosts;
+      const target = sourceList.find(m => String(m.id) === String(msgId));
       if (!target) return;
       replyingToMessage = {
         id: target.id,
-        author: target.author,
+        author: activeDmRecipient ? target.sender_name : target.author,
         text: (target.content || target.text || '').slice(0, 90)
       };
       renderAppContent('lounge');
@@ -2054,8 +2251,94 @@
       renderAppContent('lounge');
     }
 
-    async function addLoungePost(e) {
+    async function handleChatSubmit(e) {
       e.preventDefault();
+      if (activeDmRecipient) await sendDirectMessage();
+      else await addLoungePost();
+    }
+
+    async function sendDirectMessage() {
+      if (isDemoMode || !currentUser?.id || !activeDmRecipient) return;
+      const input = document.getElementById('lounge-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const replySnap = replyingToMessage ? { ...replyingToMessage } : null;
+      replyingToMessage = null;
+      input.value = '';
+
+      const optimisticDm = {
+        id: 'temp-dm-' + Date.now(),
+        sender_id: currentUser.id,
+        sender_name: userPrefs.nickname,
+        recipient_id: activeDmRecipient.user_id,
+        recipient_name: activeDmRecipient.name,
+        content: text,
+        reply_to_author: replySnap?.author || null,
+        reply_to_text: replySnap?.text || null,
+        created_at: new Date().toISOString()
+      };
+
+      directMessages.push(optimisticDm);
+      renderAppContent('lounge');
+      scrollChatToBottom();
+
+      if (liveChannel) {
+        liveChannel.send({
+          type: 'broadcast',
+          event: 'new_dm_msg',
+          payload: optimisticDm
+        });
+      }
+
+      const { data, error } = await supabaseClient
+        .from('campus_direct_messages')
+        .insert({
+          sender_id: currentUser.id,
+          sender_name: userPrefs.nickname,
+          recipient_id: activeDmRecipient.user_id,
+          recipient_name: activeDmRecipient.name,
+          content: text,
+          reply_to_author: replySnap?.author || null,
+          reply_to_text: replySnap?.text || null
+        })
+        .select()
+        .single();
+
+      if (error) {
+        chatErrorMsg = `DM error: ${error.message}`;
+        renderAppContent('lounge');
+      } else if (data) {
+        chatErrorMsg = '';
+        directMessages = directMessages.map(m => m.id === optimisticDm.id ? data : m);
+        renderAppContent('lounge');
+        scrollChatToBottom();
+      }
+    }
+
+    async function deleteDirectMessage(id) {
+      if (isDemoMode || !currentUser?.id) return;
+      directMessages = directMessages.filter(m => String(m.id) !== String(id));
+      renderAppContent('lounge');
+
+      if (liveChannel) {
+        liveChannel.send({
+          type: 'broadcast',
+          event: 'delete_dm_msg',
+          payload: { id }
+        });
+      }
+
+      if (!String(id).startsWith('temp-dm-')) {
+        await supabaseClient
+          .from('campus_direct_messages')
+          .delete()
+          .eq('id', id)
+          .eq('sender_id', currentUser.id);
+      }
+    }
+
+    async function addLoungePost() {
       if (isDemoMode || !currentUser?.id) return;
 
       const input = document.getElementById('lounge-input');
@@ -2081,13 +2364,11 @@
         created_at: new Date().toISOString()
       };
 
-      // 1. Immediate bubble render & auto-scroll
       loungePosts.unshift(optimisticPost);
       localStorage.setItem('campus_os_lounge', JSON.stringify(loungePosts));
       renderAppContent('lounge');
       scrollChatToBottom();
 
-      // 2. Immediate WebSocket broadcast to all online users
       if (liveChannel) {
         liveChannel.send({
           type: 'broadcast',
@@ -2096,7 +2377,6 @@
         });
       }
 
-      // 3. Persist to Supabase PostgreSQL
       const { data, error } = await supabaseClient
         .from('campus_lounge_posts')
         .insert({
@@ -2201,6 +2481,15 @@
       syncUserUI();
       renderAppContent('settings');
       await pushWorkspaceToCloud();
+      if (liveChannel) {
+        await liveChannel.track({
+          user_id: currentUser?.id,
+          user: userPrefs.nickname,
+          status: userPrefs.status,
+          isGuest: isDemoMode,
+          online_at: new Date().toISOString()
+        });
+      }
     }
   </script>
 </body>
