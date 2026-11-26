@@ -152,9 +152,9 @@
        ========================================== -->
   <div id="desktop-view" class="hidden h-screen w-screen flex flex-col wallpaper-nebula relative overflow-hidden">
 
-    <!-- TOP SYSTEM BAR -->
+    <!-- TOP SYSTEM BAR (Clean, zero duplicate app shortcuts) -->
     <header class="h-9 px-4 bg-slate-950/85 backdrop-blur-md border-b border-white/10 flex items-center justify-between text-xs z-50 shrink-0">
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <button onclick="toggleStartMenu()" class="flex items-center gap-2 font-bold text-white hover:text-indigo-400 transition cursor-pointer">
           <span class="w-5 h-5 rounded bg-indigo-600 flex items-center justify-center text-[11px]">🚀</span>
           <span>Campus OS</span>
@@ -165,16 +165,7 @@
       </div>
 
       <div class="flex items-center gap-4 text-slate-300">
-        <button onclick="openApp('youtube')" class="hidden sm:flex items-center gap-1.5 text-[11px] text-rose-300 hover:text-white cursor-pointer" title="Open YouTube Music">
-          <span>▶️</span>
-          <span id="top-yt-status">YouTube Music</span>
-        </button>
-        <button id="top-sound-indicator" onclick="openApp('focus')" class="hidden md:flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-white cursor-pointer">
-          <span>🎧</span>
-          <span id="sound-status-text">Ambient Off</span>
-        </button>
         <span id="os-clock" class="font-mono-code text-[11px] text-slate-200">12:00 PM</span>
-        <button onclick="openApp('settings')" class="hover:text-white transition cursor-pointer" title="Personalize">🎨</button>
         <button onclick="signOut()" class="px-2.5 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[11px] font-medium transition cursor-pointer">
           Sign Out
         </button>
@@ -184,8 +175,8 @@
     <!-- MAIN DESKTOP CANVAS -->
     <main id="desktop-canvas" class="flex-1 relative overflow-hidden p-4 sm:p-6">
 
-      <!-- Desktop Shortcut Icons Grid (All 8 Apps) -->
-      <div class="grid grid-flow-col grid-rows-4 sm:grid-rows-5 gap-3 w-fit z-10 relative">
+      <!-- Desktop Shortcut Icons Grid (Core Workspace & Hangout Apps only) -->
+      <div class="grid grid-flow-col grid-rows-4 gap-3 w-fit z-10 relative">
         <button onclick="openApp('youtube')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">▶️</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">YouTube Music</span>
@@ -220,14 +211,9 @@
           <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🧠</div>
           <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Study Buddy</span>
         </button>
-
-        <button onclick="openApp('settings')" class="group w-24 p-2.5 rounded-xl hover:bg-white/10 transition flex flex-col items-center text-center gap-1.5 cursor-pointer">
-          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center text-2xl shadow-lg group-hover:scale-105 transition">🎨</div>
-          <span class="text-[11px] font-medium text-white drop-shadow leading-tight">Personalize</span>
-        </button>
       </div>
 
-      <!-- Right-Side Chill Status Widget -->
+      <!-- Right-Side Profile & Quick Status Widget -->
       <div class="hidden lg:block absolute top-6 right-6 w-72 os-glass rounded-2xl p-4 z-10 space-y-3">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/30 flex items-center justify-center text-lg font-bold text-indigo-300" id="widget-avatar">S</div>
@@ -242,8 +228,8 @@
             <p id="widget-tasks-count" class="text-base font-bold text-emerald-400">2</p>
           </div>
           <div onclick="openApp('youtube')" class="p-2 rounded-xl bg-slate-950/50 hover:bg-slate-950/80 cursor-pointer transition">
-            <p class="text-[10px] text-slate-400 uppercase">Music Player</p>
-            <p class="text-xs font-bold text-rose-400 mt-1">▶️ Launch</p>
+            <p class="text-[10px] text-slate-400 uppercase">Music</p>
+            <p class="text-xs font-bold text-rose-400 mt-1">▶️ Open YT</p>
           </div>
         </div>
       </div>
@@ -261,13 +247,13 @@
           <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-semibold">Campus OS</span>
         </div>
 
-        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Apps &amp; Hangouts</p>
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">All Applications</p>
         <div class="grid grid-cols-2 gap-2">
           <button onclick="openApp('youtube'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
             <span class="text-xl">▶️</span>
             <div>
               <p class="text-xs font-semibold text-white">YouTube Music</p>
-              <p class="text-[10px] text-slate-400">Stream &amp; Study Mixes</p>
+              <p class="text-[10px] text-slate-400">Search &amp; Stream</p>
             </div>
           </button>
           <button onclick="openApp('focus'); toggleStartMenu(false)" class="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-white/10 text-left transition cursor-pointer">
@@ -368,7 +354,7 @@
         id: 1,
         title: 'Quick Study Ideas',
         updated: 'Today',
-        content: 'Use active recall + 25 min Pomodoro sprints.\nPut on YouTube Lo-Fi Radio in the background and minimize the player!'
+        content: 'Use active recall + 25 min Pomodoro sprints.\nSearch any study playlist in YouTube Music and minimize the player!'
       },
       {
         id: 2,
@@ -388,12 +374,12 @@
     let isCardFlipped = false;
 
     let loungePosts = JSON.parse(localStorage.getItem('campus_os_lounge')) || [
-      { id: 1, author: 'Alex M.', tag: 'Music', text: 'Having YouTube Music running in a minimized window while typing notes makes Campus OS feel like a real desktop 🔥', likes: 14, time: '9m ago' },
+      { id: 1, author: 'Alex M.', tag: 'Music', text: 'Being able to search any song right inside YouTube Music and minimize it while working is clean 🔥', likes: 14, time: '9m ago' },
       { id: 2, author: 'Chloe K.', tag: 'Chill', text: 'Anyone managed to pass 15 points on Snake yet? Keep hitting the wall 😂', likes: 8, time: '1h ago' },
       { id: 3, author: 'Samira', tag: 'Vibes', text: 'Sunset theme + late night study session hits different.', likes: 19, time: '3h ago' }
     ];
 
-    // YouTube Player State
+    // YouTube Player State (Supports Search Queries, Video IDs, and Playlists)
     const YT_PRESETS = [
       { name: '🎧 Lo-Fi Girl Beats', id: 'jfKfPfyJRdk', type: 'video' },
       { name: '🌃 Chill Synthwave', id: '4xDzrJKXOOY', type: 'video' },
@@ -659,7 +645,7 @@
             <span class="text-xs font-semibold text-white tracking-wide">${app.title}</span>
           </div>
           <div class="flex items-center gap-1.5" onmousedown="event.stopPropagation()">
-            <button onclick="minimizeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Minimize (Keep Playing in Background)">─</button>
+            <button onclick="minimizeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Minimize">─</button>
             <button onclick="toggleMaximize('${appId}')" class="w-6 h-6 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Maximize">□</button>
             <button onclick="closeWindow('${appId}')" class="w-6 h-6 rounded-lg hover:bg-rose-500/80 text-slate-400 hover:text-white text-xs flex items-center justify-center cursor-pointer" title="Close">✕</button>
           </div>
@@ -747,67 +733,67 @@
     window.addEventListener('mouseup', () => { dragInfo = null; });
 
     // ==========================================
-    // YOUTUBE MUSIC PARSER & CONTROLS
+    // YOUTUBE SEARCH & URL PARSER
     // ==========================================
     function parseYouTubeInput(input) {
       const raw = input.trim();
       if (!raw) return null;
 
-      // Check for playlist ID
+      // 1. Check for playlist URL
       const listMatch = raw.match(/[?&]list=([a-zA-Z0-9_-]+)/);
       if (listMatch && !raw.includes('watch?v=')) {
-        return { type: 'playlist', id: listMatch[1] };
+        return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
       }
 
-      // Check for standard watch?v=, youtu.be/, embed/, shorts/, or raw 11-char ID
+      // 2. Check for direct video URL or 11-char video ID
       const vidMatch = raw.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
                        (raw.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(raw) ? [null, raw] : null);
 
       if (vidMatch) {
-        return { type: 'video', id: vidMatch[1] };
+        return { type: 'video', id: vidMatch[1], title: `YouTube Video (${vidMatch[1]})` };
       }
 
       if (listMatch) {
-        return { type: 'playlist', id: listMatch[1] };
+        return { type: 'playlist', id: listMatch[1], title: 'YouTube Playlist' };
       }
 
-      return null;
+      // 3. Otherwise treat input as a YouTube Search Query
+      return { type: 'search', query: raw, id: raw, title: `Search: "${raw}"` };
     }
 
     function getYouTubeEmbedUrl(source) {
       const auto = source.autoplay ? '1' : '0';
+      if (source.type === 'search') {
+        return `https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(source.query || source.id)}&autoplay=${auto}&rel=0`;
+      }
       if (source.type === 'playlist') {
         return `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(source.id)}&autoplay=${auto}&rel=0`;
       }
       return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(source.id)}?autoplay=${auto}&rel=0`;
     }
 
-    function playYouTubePreset(id, type, title) {
-      activeYtSource = { id, type, title, autoplay: true };
-      document.getElementById('top-yt-status').textContent = title.slice(0, 18) + (title.length > 18 ? '…' : '');
+    function playYouTubePreset(id, type, title, query = '') {
+      activeYtSource = { id, type, title, query: query || id, autoplay: true };
       renderAppContent('youtube');
     }
 
-    function handleYouTubeUrlSubmit(e) {
+    function handleYouTubeSearchOrUrl(e) {
       e.preventDefault();
       const input = document.getElementById('yt-url-input');
       const parsed = parseYouTubeInput(input.value);
-      if (!parsed) {
-        alert('Please paste a valid YouTube video or playlist URL.');
-        return;
-      }
+      if (!parsed) return;
       activeYtSource = {
         id: parsed.id,
+        query: parsed.query || parsed.id,
         type: parsed.type,
-        title: parsed.type === 'playlist' ? 'Custom YouTube Playlist' : `YouTube Track (${parsed.id})`,
+        title: parsed.title,
         autoplay: true
       };
-      document.getElementById('top-yt-status').textContent = 'Playing Custom Track';
       renderAppContent('youtube');
     }
 
     function saveCurrentYtFavorite() {
-      const customTitle = prompt('Name this track or playlist for your saved list:', activeYtSource.title);
+      const customTitle = prompt('Save this search, song, or playlist as:', activeYtSource.title);
       if (!customTitle) return;
       ytFavorites.unshift({
         title: customTitle.trim(),
@@ -873,13 +859,11 @@
       stopAmbientSound();
       if (activeAmbientType === type || type === 'off') {
         activeAmbientType = 'off';
-        document.getElementById('sound-status-text').textContent = 'Ambient Off';
         renderAppContent('focus');
         return;
       }
 
       activeAmbientType = type;
-      document.getElementById('sound-status-text').textContent = type === 'rain' ? 'Rain On' : 'Deep Hum';
 
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1034,15 +1018,15 @@
       const body = document.getElementById(`win-body-${appId}`);
       if (!body) return;
 
-      // 0. YOUTUBE MUSIC & VIDEO PLAYER
+      // 0. YOUTUBE MUSIC & VIDEO PLAYER (WITH SEARCH + URL SUPPORT)
       if (appId === 'youtube') {
         const embedUrl = getYouTubeEmbedUrl(activeYtSource);
         body.innerHTML = `
           <div class="space-y-3.5">
-            <!-- URL Input Bar -->
-            <form onsubmit="handleYouTubeUrlSubmit(event)" class="flex gap-2">
-              <input id="yt-url-input" type="text" required placeholder="Paste any YouTube video or playlist link..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
-              <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold cursor-pointer shrink-0">Play</button>
+            <!-- Search or URL Input Bar -->
+            <form onsubmit="handleYouTubeSearchOrUrl(event)" class="flex gap-2">
+              <input id="yt-url-input" type="text" required placeholder="Search songs, artists, mixes OR paste YouTube URL..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-950/80 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500" />
+              <button type="submit" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold cursor-pointer shrink-0">Search / Play</button>
             </form>
 
             <!-- Responsive 16:9 YouTube Player -->
@@ -1060,7 +1044,7 @@
             <!-- Now Playing Bar -->
             <div class="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10">
               <div class="overflow-hidden">
-                <p class="text-[10px] uppercase tracking-wider text-rose-400 font-semibold">Now Loaded • Minimize window (─) to keep listening</p>
+                <p class="text-[10px] uppercase tracking-wider text-rose-400 font-semibold">Now Playing ${activeYtSource.type === 'search' ? '(Use player playlist icon ☰ to skip results)' : '• Minimize (─) for background audio'}</p>
                 <p class="text-xs font-semibold text-white truncate">${activeYtSource.title}</p>
               </div>
               <button onclick="saveCurrentYtFavorite()" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[11px] font-medium text-white shrink-0 cursor-pointer">+ Save</button>
@@ -1078,13 +1062,13 @@
               </div>
             </div>
 
-            <!-- Saved Playlist / Favorites -->
+            <!-- Saved Searches, Tracks & Playlists -->
             <div>
-              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Your Saved Tracks &amp; Playlists</p>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Your Saved Tracks &amp; Searches</p>
               <div class="space-y-1.5">
                 ${ytFavorites.map((fav, i) => `
                   <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-950/45 border border-white/5 hover:border-white/15">
-                    <button onclick="playYouTubePreset('${fav.id}', '${fav.type}', '${fav.title.replace(/'/g, "\\'")}')" class="text-xs text-slate-200 hover:text-rose-400 font-medium truncate text-left flex-1 cursor-pointer">
+                    <button onclick="playYouTubePreset('${fav.id.replace(/'/g, "\\'")}', '${fav.type}', '${fav.title.replace(/'/g, "\\'")}', '${fav.id.replace(/'/g, "\\'")}')" class="text-xs text-slate-200 hover:text-rose-400 font-medium truncate text-left flex-1 cursor-pointer">
                       ▶ ${fav.title}
                     </button>
                     <button onclick="removeYtFavorite(${i})" class="text-[11px] text-slate-500 hover:text-rose-400 ml-2 cursor-pointer">✕</button>
@@ -1285,7 +1269,7 @@
         `;
       }
 
-      // 7. PERSONALIZE & SETTINGS
+      // 7. PERSONALIZE & SETTINGS (Single home for themes & profile)
       if (appId === 'settings') {
         body.innerHTML = `
           <div class="space-y-5">
