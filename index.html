@@ -287,7 +287,14 @@
 
       try {
         if (isSignUpMode) {
-          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          const redirectUrl = window.location.origin + window.location.pathname;
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: redirectUrl
+            }
+          });
           if (error) throw error;
           if (data.session) {
             showDashboard(data.user);
